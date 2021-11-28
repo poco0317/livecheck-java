@@ -10,16 +10,16 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @Configuration
 public class DataSourceConfig {
 	
-	@Value("livecheck.db.driverclassname")
+	@Value("${livecheck.db.driverclassname}")
 	private String driverClassName;
 	
-	@Value("livecheck.db.url")
+	@Value("${livecheck.db.url}")
 	private String url;
 	
-	@Value("livecheck.db.user")
+	@Value("${livecheck.db.user}")
 	private String user;
 	
-	@Value("livecheck.db.password")
+	@Value("${livecheck.db.password}")
 	private String password;
 
 	@Bean

@@ -1,12 +1,17 @@
-
 livecheck:
   db:
     driverclassname: org.sqlite.JDBC
     url: jdbc:sqlite:memory:myDb?cache=shared
-    username: sa
+    user: sa
     password: sa
-hibernate:
-  dialect: com.baeldung.dialect.SQLiteDialect
-  show_sql: true
-  hbm2ddl:
-    auto: create-drop
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: bar.barinade.livecheck.config.SQLiteDialect
+        show_sql: true
+        hbm2ddl:
+          auto: create-drop
+          
+discord:
+  token:
