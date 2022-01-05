@@ -5,7 +5,9 @@ import javax.security.auth.login.LoginException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import bar.barinade.livecheck.discord.handler.CommandHandler;
@@ -29,6 +31,9 @@ public class BotManager {
 	private String token;
 	
 	private JDA jdaBot;
+	
+	@Autowired
+	private ApplicationContext springContext;
 	
 	@PostConstruct
 	public void initialize() throws LoginException, InterruptedException {
@@ -74,7 +79,7 @@ public class BotManager {
 		builder.setActivity(Activity.playing("Gaming"));
 		
 		// how to care about commands
-		final CommandHandlerBase cmd1 = new CommandHandler();
+		final CommandHandlerBase cmd1 = springContext.getBean(CommandHandler.class);
 		builder.addEventListeners(cmd1);
 		
 		// about to finish making the client...
