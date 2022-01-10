@@ -48,4 +48,84 @@ public class ServerConfiguration {
 	@OneToMany(mappedBy = "guild")
 	private Set<DefinedChannel> definedChannels;
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getChannelId() {
+		return channelId;
+	}
+
+	public void setChannelId(Long channelId) {
+		this.channelId = channelId;
+	}
+
+	public String getTitleRegex() {
+		return titleRegex;
+	}
+
+	public void setTitleRegex(String titleRegex) {
+		this.titleRegex = titleRegex;
+	}
+
+	public Long getMentionRoleId() {
+		return mentionRoleId;
+	}
+
+	public void setMentionRoleId(Long mentionRoleId) {
+		this.mentionRoleId = mentionRoleId;
+	}
+
+	public Set<BlacklistedCategory> getBlacklistedCategories() {
+		return blacklistedCategories;
+	}
+
+	public void setBlacklistedCategories(Set<BlacklistedCategory> blacklistedCategories) {
+		this.blacklistedCategories = blacklistedCategories;
+	}
+
+	public Set<BlacklistedChannel> getBlacklistedChannels() {
+		return blacklistedChannels;
+	}
+
+	public void setBlacklistedChannels(Set<BlacklistedChannel> blacklistedChannels) {
+		this.blacklistedChannels = blacklistedChannels;
+	}
+
+	public Set<WhitelistedCategory> getWhitelistedCategories() {
+		return whitelistedCategories;
+	}
+
+	public void setWhitelistedCategories(Set<WhitelistedCategory> whitelistedCategories) {
+		this.whitelistedCategories = whitelistedCategories;
+	}
+
+	public Set<WhitelistedChannel> getWhitelistedChannels() {
+		return whitelistedChannels;
+	}
+
+	public void setWhitelistedChannels(Set<WhitelistedChannel> whitelistedChannels) {
+		this.whitelistedChannels = whitelistedChannels;
+	}
+
+	public Set<DefinedCategory> getDefinedCategories() {
+		return definedCategories;
+	}
+
+	public void setDefinedCategories(Set<DefinedCategory> definedCategories) {
+		this.definedCategories = definedCategories;
+	}
+
+	public Set<DefinedChannel> getDefinedChannels() {
+		return definedChannels;
+	}
+
+	public void setDefinedChannels(Set<DefinedChannel> definedChannels) {
+		this.definedChannels = definedChannels;
+	}
+
 }

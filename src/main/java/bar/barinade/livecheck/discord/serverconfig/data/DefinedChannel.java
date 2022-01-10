@@ -23,4 +23,21 @@ public class DefinedChannel {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "guild_id", nullable = false)
 	private ServerConfiguration guild;
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public ServerConfiguration getGuild() {
+		return guild;
+	}
+
+	public void setGuild(ServerConfiguration guild) {
+		this.guild = guild;
+	}
+	
 }
