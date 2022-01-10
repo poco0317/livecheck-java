@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import bar.barinade.livecheck.discord.serverconfig.ServerConfigService;
+import bar.barinade.livecheck.streams.data.repo.LivestreamInfoRepo;
+import bar.barinade.livecheck.streams.data.repo.PostedLivestreamRepo;
 import bar.barinade.livecheck.streams.twitch.TwitchLivestreamImpl;
 
 @Service
@@ -21,6 +24,15 @@ public class LivestreamManager {
 
 	@Autowired
 	private ApplicationContext springContext;
+	
+	@Autowired
+	private ServerConfigService configService;
+	
+	@Autowired
+	private LivestreamInfoRepo streamRepo;
+	
+	@Autowired
+	private PostedLivestreamRepo postRepo;
 	
 	@PostConstruct
 	public void init() {
