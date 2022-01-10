@@ -2,9 +2,11 @@ package bar.barinade.livecheck.discord.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import bar.barinade.livecheck.discord.serverconfig.ServerConfigService;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -37,6 +39,9 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private static final String EXPLAIN_CATEGORY_WHITELIST = " Having this whitelist set means all categories must be in this list, if detected via streamer.";
 	private static final String EXPLAIN_STREAMER_BLACKLIST = " Having this blacklist set means any streamer found in this list will not show up when live.";
 	private static final String EXPLAIN_CATEGORY_BLACKLIST = " Having this blacklist set means any streamer with a category category found in this list will not show up when live.";
+	
+	@Autowired
+	private ServerConfigService configService;
 	
 	@Override
 	public CommandData[] getCommandsToUpsert() {
