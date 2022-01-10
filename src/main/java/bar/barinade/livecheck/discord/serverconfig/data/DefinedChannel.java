@@ -1,4 +1,4 @@
-package bar.barinade.livecheck.discord.serverconfig;
+package bar.barinade.livecheck.discord.serverconfig.data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,16 +9,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * If any whitelisted category is present, all streamers resolved must be using any of the whitelisted categories.
+ * The defined list of streamers or channels to watch from any platform.
  *
  */
 @Entity
-@Table(name = "whitelisted_categories")
-public class WhitelistedCategory {
+@Table(name = "defined_channels")
+public class DefinedChannel {
 
 	@Id
-	@Column(name = "category", nullable = false)
-	private String category;
+	@Column(name = "channel", nullable = false)
+	private String channel;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "guild_id", nullable = false)

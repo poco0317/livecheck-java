@@ -1,5 +1,4 @@
-package bar.barinade.livecheck.discord.serverconfig;
-
+package bar.barinade.livecheck.discord.serverconfig.data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,15 +8,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-
 /**
- * If a streamer happens to be in this category, their stream will not show up.
+ * If any whitelisted category is present, all streamers resolved must be using any of the whitelisted categories.
  *
  */
 @Entity
-@Table(name = "blacklisted_categories")
-public class BlacklistedCategory {
-	
+@Table(name = "whitelisted_categories")
+public class WhitelistedCategory {
+
 	@Id
 	@Column(name = "category", nullable = false)
 	private String category;
@@ -25,5 +23,4 @@ public class BlacklistedCategory {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "guild_id", nullable = false)
 	private ServerConfiguration guild;
-
 }

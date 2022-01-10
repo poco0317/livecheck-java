@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import bar.barinade.livecheck.discord.serverconfig.ServerConfiguration;
+import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
 
 @Entity
 @Table(name = "posted_livestreams")

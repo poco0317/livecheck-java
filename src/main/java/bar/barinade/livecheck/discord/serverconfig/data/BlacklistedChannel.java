@@ -1,4 +1,4 @@
-package bar.barinade.livecheck.discord.serverconfig;
+package bar.barinade.livecheck.discord.serverconfig.data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
