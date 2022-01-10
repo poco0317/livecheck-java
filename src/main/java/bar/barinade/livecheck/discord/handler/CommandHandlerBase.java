@@ -51,16 +51,37 @@ public abstract class CommandHandlerBase extends ListenerAdapter {
 	public void onSlashCommand(SlashCommandEvent event) {
 		
 		final String name = event.getName();
+		final String group = event.getSubcommandGroup();
+		final String subname = event.getSubcommandName();
 		final Method handler = commandEventHandlers.getOrDefault(name, null);
+		
+		if (!event.isFromGuild()) {
+			m_logger.info("{} attempted to use {} outside of a guild.", event.getUser().getId(), name);
+			event.reply("Cannot invoke commands from DM").setEphemeral(true).queue();
+			return;
+		}
 		
 		if (handler == null) {
 			m_logger.warn("Received command event for unknown handler! Command name: {}", name);
 		} else {
-			m_logger.trace("Invoking Command: {}", name);
+			
+			if (group != null && subname != null) {
+				m_logger.trace("{} invoking Command: {} | GROUP {} | SUB {}", event.getUser().getId(), name, group, subname);
+			} else if (group != null) {
+				m_logger.trace("{} invoking Command: {} | GROUP {}", event.getUser().getId(), name, group);
+			} else {
+				m_logger.trace("{} invoking Command: {}", event.getUser().getId(), name);
+			}
+			
 			try {
+				event.deferReply().queue();
 				handler.invoke(this, event);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				m_logger.error("Error in method invokation: "+e.getMessage(), e);
+				event.getHook().editOriginal("Internal error occurred when processing command: "+e.getClass().getSimpleName()).queue();
+			} catch (RuntimeException e) {
+				m_logger.error("Error in method invokation: "+e.getMessage(), e);
+				event.getHook().editOriginal("Internal error occurred when processing command: "+e.getClass().getSimpleName()).queue();
 			}
 		}
 	}

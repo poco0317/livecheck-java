@@ -1,4 +1,4 @@
-package bar.barinade.livecheck.streams;
+package bar.barinade.livecheck.streams.data;
 
 import java.util.UUID;
 

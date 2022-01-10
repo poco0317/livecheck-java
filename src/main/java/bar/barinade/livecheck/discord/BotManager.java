@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import bar.barinade.livecheck.discord.handler.BasicCommandHandler;
 import bar.barinade.livecheck.discord.handler.CommandHandlerBase;
+import bar.barinade.livecheck.discord.handler.ServerConfigCommandHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -79,8 +80,9 @@ public class BotManager {
 		builder.setActivity(Activity.playing("Gaming"));
 		
 		// how to care about commands
-		final CommandHandlerBase cmd1 = springContext.getBean(BasicCommandHandler.class);
-		builder.addEventListeners(cmd1);
+		final CommandHandlerBase basicCommands = springContext.getBean(BasicCommandHandler.class);
+		final CommandHandlerBase configCommands = springContext.getBean(ServerConfigCommandHandler.class);
+		builder.addEventListeners(basicCommands, configCommands);
 		
 		// about to finish making the client...
 		m_logger.info("Waiting for login");
@@ -90,12 +92,27 @@ public class BotManager {
 		m_logger.info("Login finished");
 
 		m_logger.info("Registering commands");
+		
 		// how to care about slash commands
-		for (final CommandData cmd : cmd1.getCommandsToUpsert()) {
-			result.upsertCommand(cmd).queue();
-		}
+		// have to do this after trying to log in
+		upsertHandlerCommands(result, basicCommands, configCommands);
 		
 		m_logger.info("BotManager initialize finished");
+	}
+	
+	private static void upsertHandlerCommands(JDA jda, CommandHandlerBase... handlers) {
+		if (handlers == null) {
+			m_logger.error("Passed no handlers to upsertHandlerCommands. No commands upserted.");
+		} else {
+			long cnt = 0;
+			for (CommandHandlerBase handler : handlers) {
+				for (final CommandData cmd : handler.getCommandsToUpsert()) {
+					jda.upsertCommand(cmd).queue();
+					cnt++;
+				}
+			}
+			m_logger.info("Upserted {} commands from {} handlers.", cnt, handlers.length);
+		}
 	}
 
 }

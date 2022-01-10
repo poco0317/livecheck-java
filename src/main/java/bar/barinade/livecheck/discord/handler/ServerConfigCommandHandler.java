@@ -2,6 +2,8 @@ package bar.barinade.livecheck.discord.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -9,6 +11,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
+@Component
+@Scope("prototype")
 public class ServerConfigCommandHandler extends CommandHandlerBase {
 	
 	private static final Logger m_logger = LoggerFactory.getLogger(ServerConfigCommandHandler.class);
@@ -116,9 +120,9 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		};
 	}
 	
-	void cmd_channel(SlashCommandEvent event) {
+	void cmd_config(SlashCommandEvent event) {
 		final String cmd = event.getName();
-		
+				
 		if (cmd.equalsIgnoreCase(BASE_CMD_NAME)) {
 			final String group = event.getSubcommandGroup();
 			if (group != null) {
@@ -152,7 +156,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 					break;
 				default:
 					m_logger.warn("{} attempted to use unknown group {}", event.getUser().getId(), group);
-					event.reply("Invalid command group. Report to developer").setEphemeral(true).queue();
+					event.getHook().editOriginal("Invalid command group. Report to developer").queue();
 					break;
 				}
 			}
@@ -162,7 +166,13 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	}
 	
 	private void reqTitle(SlashCommandEvent event) {
-		
+		final String method = event.getSubcommandName();
+		if (method == null) {
+			event.getHook().editOriginal("Missing argument 'set' or 'remove'").queue();
+			return;
+		} else {
+			
+		}
 	}
 	
 	private void txtChannel(SlashCommandEvent event) {
