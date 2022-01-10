@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 @Component
 @Scope("prototype")
-public class CommandHandler extends CommandHandlerBase {
+public class BasicCommandHandler extends CommandHandlerBase {
 	
 	@Override
 	public CommandData[] getCommandsToUpsert() {

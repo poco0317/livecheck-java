@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import bar.barinade.livecheck.discord.handler.CommandHandler;
+import bar.barinade.livecheck.discord.handler.BasicCommandHandler;
 import bar.barinade.livecheck.discord.handler.CommandHandlerBase;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -36,7 +36,7 @@ public class BotManager {
 	private ApplicationContext springContext;
 	
 	@PostConstruct
-	public void initialize() throws LoginException, InterruptedException {
+	private void initialize() throws LoginException, InterruptedException {
 		m_logger.info("Initializing BotManager");
 		JDABuilder builder = JDABuilder.createDefault(token);
 		
@@ -79,7 +79,7 @@ public class BotManager {
 		builder.setActivity(Activity.playing("Gaming"));
 		
 		// how to care about commands
-		final CommandHandlerBase cmd1 = springContext.getBean(CommandHandler.class);
+		final CommandHandlerBase cmd1 = springContext.getBean(BasicCommandHandler.class);
 		builder.addEventListeners(cmd1);
 		
 		// about to finish making the client...
