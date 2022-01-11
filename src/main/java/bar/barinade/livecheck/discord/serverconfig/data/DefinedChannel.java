@@ -1,11 +1,7 @@
 package bar.barinade.livecheck.discord.serverconfig.data;
 
-import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -16,28 +12,15 @@ import javax.persistence.Table;
 @Table(name = "defined_channels")
 public class DefinedChannel {
 
-	@Id
-	@Column(name = "channel", nullable = false)
-	private String channel;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "guild_id", nullable = false)
-	private ServerConfiguration guild;
+	@EmbeddedId
+	private DefinedChannelId id;
 
-	public String getChannel() {
-		return channel;
+	public DefinedChannelId getId() {
+		return id;
 	}
 
-	public void setChannel(String channel) {
-		this.channel = channel;
-	}
-
-	public ServerConfiguration getGuild() {
-		return guild;
-	}
-
-	public void setGuild(ServerConfiguration guild) {
-		this.guild = guild;
+	public void setId(DefinedChannelId id) {
+		this.id = id;
 	}
 	
 }

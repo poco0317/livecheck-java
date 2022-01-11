@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import bar.barinade.livecheck.discord.serverconfig.ServerConfigService;
+import bar.barinade.livecheck.discord.serverconfig.service.ServerConfigService;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -34,6 +37,11 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private static final String SUBCMD_SET = "set";
 	private static final String SUBCMD_LIST = "list";
 	private static final String SUBCMD_DELALL = "delall";
+	private static final String OPTION_CHANNEL = "channel";
+	private static final String OPTION_STREAMER = "streamer";
+	private static final String OPTION_CATEGORY = "category";
+	private static final String OPTION_REGEX = "regex";
+	private static final String OPTION_ROLE = "role";
 	
 	private static final String EXPLAIN_STREAMER_WHITELIST = " Having this whitelist set means all streamers must be in this list, if detected via category.";
 	private static final String EXPLAIN_CATEGORY_WHITELIST = " Having this whitelist set means all categories must be in this list, if detected via streamer.";
@@ -53,65 +61,65 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove the required title Regular Expression."),
 								new SubcommandData(SUBCMD_SET, "Set the required title Regular Expression. If set, all stream titles must match to show up.")
-									.addOption(OptionType.STRING, "regex", "Regular Expression to match to stream titles", true)
+									.addOption(OptionType.STRING, OPTION_REGEX, "Regular Expression to match to stream titles", true)
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_TXTCHAN, "Modify the output channel for livestreams in this server.")
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Unset the output channel for livestreams."),
 								new SubcommandData(SUBCMD_SET, "Set the output channel for livestreams.")
-									.addOption(OptionType.CHANNEL, "channel", "Output channel for livestreams", true)
+									.addOption(OptionType.CHANNEL, OPTION_CHANNEL, "Output channel for livestreams", true)
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_CATEGORY, "Add categories to or remove categories from the watchlist.")
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove a category from the watchlist.")
-									.addOption(OptionType.STRING, "category", "Category to remove", true),
+									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to remove", true),
 								new SubcommandData(SUBCMD_ADD, "Add a category to the watchlist.")
-									.addOption(OptionType.STRING, "category", "Category to add", true),
+									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
 								new SubcommandData(SUBCMD_LIST, "View the list of categories being watched."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all categories from the watchlist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_STREAMER, "Add streamers to or remove streamers from the watchlist.")
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove a streamer from the watchlist.")
-									.addOption(OptionType.STRING, "streamer", "Streamer to remove", true),
+									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to remove", true),
 								new SubcommandData(SUBCMD_ADD, "Add a streamer to the watchlist.")
-									.addOption(OptionType.STRING, "streamer", "Streamer to add", true),
+									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to add", true),
 								new SubcommandData(SUBCMD_LIST, "View the list of streamers being watched."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all streamers from the watchlist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_STREAMERWHITELIST, "Modify the streamer whitelist." + EXPLAIN_STREAMER_WHITELIST)
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove a streamer from the whitelist.")
-									.addOption(OptionType.STRING, "streamer", "Streamer to remove", true),
+									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to remove", true),
 								new SubcommandData(SUBCMD_ADD, "Add a streamer to the whitelist." + EXPLAIN_STREAMER_WHITELIST)
-									.addOption(OptionType.STRING, "streamer", "Streamer to add", true),
+									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to add", true),
 								new SubcommandData(SUBCMD_LIST, "View the streamer whitelist."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all streamers from the whitelist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_STREAMERBLACKLIST, "Modify the streamer blacklist." + EXPLAIN_STREAMER_BLACKLIST)
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove a streamer from the blacklist.")
-									.addOption(OptionType.STRING, "streamer", "Streamer to remove", true),
+									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to remove", true),
 								new SubcommandData(SUBCMD_ADD, "Add a streamer to the blacklist." + EXPLAIN_STREAMER_BLACKLIST)
-									.addOption(OptionType.STRING, "streamer", "Streamer to add", true),
+									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to add", true),
 								new SubcommandData(SUBCMD_LIST, "View the streamer blacklist."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all streamers from the blacklist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_CATEGORYWHITELIST, "Modify the category whitelist." + EXPLAIN_CATEGORY_WHITELIST)
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove a category from the whitelist.")
-									.addOption(OptionType.STRING, "category", "Category to add", true),
+									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
 								new SubcommandData(SUBCMD_ADD, "Add a category to the whitelist." + EXPLAIN_CATEGORY_WHITELIST)
-									.addOption(OptionType.STRING, "category", "Category to add", true),
+									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
 								new SubcommandData(SUBCMD_LIST, "View the category whitelist."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all categories from the whitelist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_CATEGORYBLACKLIST, "Modify the category blacklist." + EXPLAIN_CATEGORY_BLACKLIST)
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove a category from the blacklist.")
-									.addOption(OptionType.STRING, "category", "Category to add", true),
+									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
 								new SubcommandData(SUBCMD_ADD, "Add a category to the blacklist." + EXPLAIN_CATEGORY_BLACKLIST)
-									.addOption(OptionType.STRING, "category", "Category to add", true),
+									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
 								new SubcommandData(SUBCMD_LIST, "View the category blacklist."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all categories from the blacklist.")
 						),
@@ -119,7 +127,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove the mention that occurs every time a streamer goes live."),
 								new SubcommandData(SUBCMD_SET, "Set the role which is mentioned every time a streamer goes live.")
-									.addOption(OptionType.ROLE, "role", "Role to mention")
+									.addOption(OptionType.ROLE, OPTION_ROLE, "Role to mention")
 						)
 				),
 		};
@@ -173,19 +181,90 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private void reqTitle(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
-			event.getHook().editOriginal("Missing argument 'set' or 'remove'").queue();
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
 			return;
 		} else {
-			
+			final Long id = event.getGuild().getIdLong();
+
+			if (method.equals(SUBCMD_REMOVE)) {
+				configService.setRequiredTitleRegex(id, null);
+				event.getHook().editOriginal("Removed title regex").queue();
+			} else if (method.equals(SUBCMD_SET)) {
+				final String regex = event.getOption(OPTION_REGEX).getAsString();
+				configService.setRequiredTitleRegex(id, regex);
+				event.getHook().editOriginal("Set title regex to: "+regex).queue();
+			} else {
+				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+			}
 		}
 	}
 	
 	private void txtChannel(SlashCommandEvent event) {
-		
+		final String method = event.getSubcommandName();
+		if (method == null) {
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+			return;
+		} else {
+			final Long id = event.getGuild().getIdLong();
+			
+			if (method.equals(SUBCMD_REMOVE)) {
+				configService.setTextChannel(id, null);
+				event.getHook().editOriginal("Removed output channel").queue();
+			} else if (method.equals(SUBCMD_SET)) {
+				final ChannelType chantype = event.getOption(OPTION_CHANNEL).getChannelType();
+				if (!chantype.equals(ChannelType.TEXT)) {
+					event.getHook().editOriginal("You must specify a Text Channel. Your channel was of type '"+chantype.toString()+"'").queue();
+					return;
+				}
+				final MessageChannel channel = event.getOption(OPTION_CHANNEL).getAsMessageChannel();
+				configService.setTextChannel(id, channel.getIdLong());
+				event.getHook().editOriginal("Set output channel to: "+channel.getName()).queue();
+			} else {
+				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+			}
+		}
+	}
+	
+	private void liveRole(SlashCommandEvent event) {
+		final String method = event.getSubcommandName();
+		if (method == null) {
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+			return;
+		} else {
+			final Long id = event.getGuild().getIdLong();
+			
+			if (method.equals(SUBCMD_REMOVE)) {
+				configService.setLiveRole(id, null);
+				event.getHook().editOriginal("Removed mention role").queue();
+			} else if (method.equals(SUBCMD_SET)) {
+				final Role role = event.getOption(OPTION_ROLE).getAsRole();
+				configService.setLiveRole(id, role.getIdLong());	
+				event.getHook().editOriginal("Set mention role to: "+role.getName()+". This will be mentioned every time any streamer goes live.").queue();
+			} else {
+				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+			}
+		}
 	}
 	
 	private void categoryWatch(SlashCommandEvent event) {
-		
+		final String method = event.getSubcommandName();
+		if (method == null) {
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			return;
+		} else {
+			final Long id = event.getGuild().getIdLong();
+			
+			if (method.equals(SUBCMD_DELALL)) {
+				configService.delAll(id);
+				event.getHook().editOriginal("Removed all categories from the watch list.").queue();
+			} else if (method.equals(SUBCMD_REMOVE)) {
+				final String category = event.getOption(OPTION_CATEGORY).getAsString();
+				configService.remove(id, category);
+				event.getHook().editOriginal("Removed category '"+category+"' from the watch list.").queue();
+			} else if (method.equals(SUBCMD_LIST)) {
+				
+			}
+		}
 	}
 	
 	private void streamerWatch(SlashCommandEvent event) {
@@ -205,10 +284,6 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	}
 	
 	private void blCategory(SlashCommandEvent event) {
-		
-	}
-	
-	private void liveRole(SlashCommandEvent event) {
 		
 	}
 

@@ -1,11 +1,7 @@
 package bar.barinade.livecheck.discord.serverconfig.data;
 
-import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -16,28 +12,15 @@ import javax.persistence.Table;
 @Table(name = "defined_categories")
 public class DefinedCategory {
 
-	@Id
-	@Column(name = "category", nullable = false)
-	private String category;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "guild_id", nullable = false)
-	private ServerConfiguration guild;
+	@EmbeddedId
+	private DefinedCategoryId id;
 
-	public String getCategory() {
-		return category;
+	public DefinedCategoryId getId() {
+		return id;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
-	public ServerConfiguration getGuild() {
-		return guild;
-	}
-
-	public void setGuild(ServerConfiguration guild) {
-		this.guild = guild;
+	public void setId(DefinedCategoryId id) {
+		this.id = id;
 	}
 	
 }

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import bar.barinade.livecheck.discord.serverconfig.ServerConfigService;
+import bar.barinade.livecheck.discord.serverconfig.service.ServerConfigService;
 import bar.barinade.livecheck.streams.data.repo.LivestreamInfoRepo;
 import bar.barinade.livecheck.streams.data.repo.PostedLivestreamRepo;
 import bar.barinade.livecheck.streams.twitch.TwitchLivestreamImpl;

@@ -1,11 +1,17 @@
 package bar.barinade.livecheck.discord.serverconfig.repo;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import bar.barinade.livecheck.discord.serverconfig.data.DefinedChannel;
+import bar.barinade.livecheck.discord.serverconfig.data.DefinedChannelId;
 
 @Repository
-public interface DefinedChannelRepo extends JpaRepository<DefinedChannel, String> {
+public interface DefinedChannelRepo extends JpaRepository<DefinedChannel, DefinedChannelId> {
+	
+	List<DefinedChannel> findByDefinedChannelIdGuildId(Long id);
+	Long deleteByDefinedChannelIdGuildId(Long id);
 
 }

@@ -1,26 +1,17 @@
 package bar.barinade.livecheck.streams.data;
 
-import java.util.UUID;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "livestream_info")
 public class LivestreamInfo {
-
-	@Id
-	@GeneratedValue(generator = "UUID")
-	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-	private UUID id;
 	
-	@Column(name = "name", nullable = false)
-	private String name;
+	@EmbeddedId
+	private LivestreamInfoId id;
 	
 	@Column(name = "followers", nullable = false)
 	private Long followers;
@@ -37,20 +28,12 @@ public class LivestreamInfo {
 	@Column(name = "description", nullable = false)
 	private String description;
 
-	public UUID getId() {
+	public LivestreamInfoId getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(LivestreamInfoId id) {
 		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public Long getFollowers() {
