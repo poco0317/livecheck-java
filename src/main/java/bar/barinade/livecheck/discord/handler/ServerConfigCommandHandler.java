@@ -1,12 +1,26 @@
 package bar.barinade.livecheck.discord.handler;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import bar.barinade.livecheck.discord.serverconfig.data.BlacklistedCategory;
+import bar.barinade.livecheck.discord.serverconfig.data.BlacklistedChannel;
+import bar.barinade.livecheck.discord.serverconfig.data.DefinedCategory;
+import bar.barinade.livecheck.discord.serverconfig.data.DefinedChannel;
+import bar.barinade.livecheck.discord.serverconfig.data.WhitelistedCategory;
+import bar.barinade.livecheck.discord.serverconfig.data.WhitelistedChannel;
+import bar.barinade.livecheck.discord.serverconfig.service.BlacklistedCategoryService;
+import bar.barinade.livecheck.discord.serverconfig.service.BlacklistedChannelService;
+import bar.barinade.livecheck.discord.serverconfig.service.DefinedCategoryService;
+import bar.barinade.livecheck.discord.serverconfig.service.DefinedChannelService;
 import bar.barinade.livecheck.discord.serverconfig.service.ServerConfigService;
+import bar.barinade.livecheck.discord.serverconfig.service.WhitelistedCategoryService;
+import bar.barinade.livecheck.discord.serverconfig.service.WhitelistedChannelService;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
@@ -50,6 +64,21 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	
 	@Autowired
 	private ServerConfigService configService;
+	
+	@Autowired
+	private BlacklistedCategoryService blCategoryService;
+	@Autowired
+	private BlacklistedChannelService blChannelService;
+	
+	@Autowired
+	private WhitelistedCategoryService wlCategoryService;
+	@Autowired
+	private WhitelistedChannelService wlChannelService;
+	
+	@Autowired
+	private DefinedCategoryService categoryService;
+	@Autowired
+	private DefinedChannelService channelService;
 	
 	@Override
 	public CommandData[] getCommandsToUpsert() {
@@ -255,36 +284,265 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 			final Long id = event.getGuild().getIdLong();
 			
 			if (method.equals(SUBCMD_DELALL)) {
-				configService.delAll(id);
-				event.getHook().editOriginal("Removed all categories from the watch list.").queue();
+				Long count = categoryService.delAll(id);
+				event.getHook().editOriginal("Removed all categories ("+count+") from the watch list.").queue();
 			} else if (method.equals(SUBCMD_REMOVE)) {
 				final String category = event.getOption(OPTION_CATEGORY).getAsString();
-				configService.remove(id, category);
-				event.getHook().editOriginal("Removed category '"+category+"' from the watch list.").queue();
+				boolean success = categoryService.remove(id, category);
+				if (success) {
+					event.getHook().editOriginal("Removed category '"+category+"' from the watch list.").queue();
+				} else {
+					event.getHook().editOriginal("Category '"+category+"' was already not in watch list. Nothing removed.").queue();
+				}
 			} else if (method.equals(SUBCMD_LIST)) {
-				
+				List<DefinedCategory> categories = categoryService.getAll(id);
+				if (categories == null || categories.size() == 0) {
+					event.getHook().editOriginal("There are no categories in the watch list.").queue();
+				} else {
+					StringBuilder sb = new StringBuilder();
+					sb.append(categories.size() + " categories: ```\n");
+					for (DefinedCategory c : categories) {
+						sb.append(c.getId().getCategory() + ", ");
+					}
+					String result = sb.toString();
+					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					event.getHook().editOriginal(result).queue();
+				}
+			} else if (method.equals(SUBCMD_ADD)) {
+				final String category = event.getOption(OPTION_CATEGORY).getAsString();
+				boolean success = categoryService.add(id, category);
+				if (success) {
+					event.getHook().editOriginal("Added category '"+category+"' to the watch list.").queue();
+				} else {
+					event.getHook().editOriginal("Category '"+category+"' was already in the watch list. Nothing added.").queue();
+				}
 			}
 		}
 	}
 	
 	private void streamerWatch(SlashCommandEvent event) {
-		
+		final String method = event.getSubcommandName();
+		if (method == null) {
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			return;
+		} else {
+			final Long id = event.getGuild().getIdLong();
+			
+			if (method.equals(SUBCMD_DELALL)) {
+				Long count = channelService.delAll(id);
+				event.getHook().editOriginal("Removed all streamers ("+count+") from the watch list.").queue();
+			} else if (method.equals(SUBCMD_REMOVE)) {
+				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				boolean success = channelService.remove(id, channel);
+				if (success) {
+					event.getHook().editOriginal("Removed streamer '"+channel+"' from the watch list.").queue();
+				} else {
+					event.getHook().editOriginal("Streamer '"+channel+"' was already not in watch list. Nothing removed.").queue();
+				}
+			} else if (method.equals(SUBCMD_LIST)) {
+				List<DefinedChannel> channels = channelService.getAll(id);
+				if (channels == null || channels.size() == 0) {
+					event.getHook().editOriginal("There are no streamers in the watch list.").queue();
+				} else {
+					StringBuilder sb = new StringBuilder();
+					sb.append(channels.size() + " channels: ```\n");
+					for (DefinedChannel c : channels) {
+						sb.append(c.getId().getChannel() + ", ");
+					}
+					String result = sb.toString();
+					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					event.getHook().editOriginal(result).queue();
+				}
+			} else if (method.equals(SUBCMD_ADD)) {
+				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				boolean success = channelService.add(id, channel);
+				if (success) {
+					event.getHook().editOriginal("Added streamer '"+channel+"' to the watch list.").queue();
+				} else {
+					event.getHook().editOriginal("Streamer '"+channel+"' was already in the watch list. Nothing added.").queue();
+				}
+			}
+		}
 	}
 	
 	private void wlStreamer(SlashCommandEvent event) {
-		
+		final String method = event.getSubcommandName();
+		if (method == null) {
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			return;
+		} else {
+			final Long id = event.getGuild().getIdLong();
+			
+			if (method.equals(SUBCMD_DELALL)) {
+				Long count = wlChannelService.delAll(id);
+				event.getHook().editOriginal("Removed all streamers ("+count+") from the whitelist.").queue();
+			} else if (method.equals(SUBCMD_REMOVE)) {
+				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				boolean success = wlChannelService.remove(id, channel);
+				if (success) {
+					event.getHook().editOriginal("Removed streamer '"+channel+"' from the whitelist.").queue();
+				} else {
+					event.getHook().editOriginal("Streamer '"+channel+"' was already not in whitelist. Nothing removed.").queue();
+				}
+			} else if (method.equals(SUBCMD_LIST)) {
+				List<WhitelistedChannel> channels = wlChannelService.getAll(id);
+				if (channels == null || channels.size() == 0) {
+					event.getHook().editOriginal("There are no streamers in the whitelist.").queue();
+				} else {
+					StringBuilder sb = new StringBuilder();
+					sb.append(channels.size() + " channels: ```\n");
+					for (WhitelistedChannel c : channels) {
+						sb.append(c.getId().getChannel() + ", ");
+					}
+					String result = sb.toString();
+					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					event.getHook().editOriginal(result).queue();
+				}
+			} else if (method.equals(SUBCMD_ADD)) {
+				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				boolean success = wlChannelService.add(id, channel);
+				if (success) {
+					event.getHook().editOriginal("Added streamer '"+channel+"' to the whitelist.").queue();
+				} else {
+					event.getHook().editOriginal("Streamer '"+channel+"' was already in the whitelist. Nothing added.").queue();
+				}
+			}
+		}
 	}
 	
 	private void wlCategory(SlashCommandEvent event) {
-		
+		final String method = event.getSubcommandName();
+		if (method == null) {
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			return;
+		} else {
+			final Long id = event.getGuild().getIdLong();
+			
+			if (method.equals(SUBCMD_DELALL)) {
+				Long count = wlCategoryService.delAll(id);
+				event.getHook().editOriginal("Removed all categories ("+count+") from the whitelist.").queue();
+			} else if (method.equals(SUBCMD_REMOVE)) {
+				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				boolean success = wlCategoryService.remove(id, channel);
+				if (success) {
+					event.getHook().editOriginal("Removed category '"+channel+"' from the whitelist.").queue();
+				} else {
+					event.getHook().editOriginal("Category '"+channel+"' was already not in whitelist. Nothing removed.").queue();
+				}
+			} else if (method.equals(SUBCMD_LIST)) {
+				List<WhitelistedCategory> channels = wlCategoryService.getAll(id);
+				if (channels == null || channels.size() == 0) {
+					event.getHook().editOriginal("There are no categories in the whitelist.").queue();
+				} else {
+					StringBuilder sb = new StringBuilder();
+					sb.append(channels.size() + " channels: ```\n");
+					for (WhitelistedCategory c : channels) {
+						sb.append(c.getId().getCategory() + ", ");
+					}
+					String result = sb.toString();
+					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					event.getHook().editOriginal(result).queue();
+				}
+			} else if (method.equals(SUBCMD_ADD)) {
+				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				boolean success = wlCategoryService.add(id, channel);
+				if (success) {
+					event.getHook().editOriginal("Added category '"+channel+"' to the whitelist.").queue();
+				} else {
+					event.getHook().editOriginal("Category '"+channel+"' was already in the whitelist. Nothing added.").queue();
+				}
+			}
+		}
 	}
 	
 	private void blStreamer(SlashCommandEvent event) {
-		
+		final String method = event.getSubcommandName();
+		if (method == null) {
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			return;
+		} else {
+			final Long id = event.getGuild().getIdLong();
+			
+			if (method.equals(SUBCMD_DELALL)) {
+				Long count = blChannelService.delAll(id);
+				event.getHook().editOriginal("Removed all streamers ("+count+") from the blacklist.").queue();
+			} else if (method.equals(SUBCMD_REMOVE)) {
+				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				boolean success = blChannelService.remove(id, channel);
+				if (success) {
+					event.getHook().editOriginal("Removed streamer '"+channel+"' from the blacklist.").queue();
+				} else {
+					event.getHook().editOriginal("Streamer '"+channel+"' was already not in blacklist. Nothing removed.").queue();
+				}
+			} else if (method.equals(SUBCMD_LIST)) {
+				List<BlacklistedChannel> channels = blChannelService.getAll(id);
+				if (channels == null || channels.size() == 0) {
+					event.getHook().editOriginal("There are no streamers in the blacklist.").queue();
+				} else {
+					StringBuilder sb = new StringBuilder();
+					sb.append(channels.size() + " channels: ```\n");
+					for (BlacklistedChannel c : channels) {
+						sb.append(c.getId().getChannel() + ", ");
+					}
+					String result = sb.toString();
+					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					event.getHook().editOriginal(result).queue();
+				}
+			} else if (method.equals(SUBCMD_ADD)) {
+				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				boolean success = blChannelService.add(id, channel);
+				if (success) {
+					event.getHook().editOriginal("Added streamer '"+channel+"' to the blacklist.").queue();
+				} else {
+					event.getHook().editOriginal("Streamer '"+channel+"' was already in the blacklist. Nothing added.").queue();
+				}
+			}
+		}
 	}
 	
 	private void blCategory(SlashCommandEvent event) {
-		
+		final String method = event.getSubcommandName();
+		if (method == null) {
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			return;
+		} else {
+			final Long id = event.getGuild().getIdLong();
+			
+			if (method.equals(SUBCMD_DELALL)) {
+				Long count = blCategoryService.delAll(id);
+				event.getHook().editOriginal("Removed all categories ("+count+") from the blacklist.").queue();
+			} else if (method.equals(SUBCMD_REMOVE)) {
+				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				boolean success = blCategoryService.remove(id, channel);
+				if (success) {
+					event.getHook().editOriginal("Removed category '"+channel+"' from the blacklist.").queue();
+				} else {
+					event.getHook().editOriginal("Category '"+channel+"' was already not in blacklist. Nothing removed.").queue();
+				}
+			} else if (method.equals(SUBCMD_LIST)) {
+				List<BlacklistedCategory> channels = blCategoryService.getAll(id);
+				if (channels == null || channels.size() == 0) {
+					event.getHook().editOriginal("There are no categories in the blacklist.").queue();
+				} else {
+					StringBuilder sb = new StringBuilder();
+					sb.append(channels.size() + " channels: ```\n");
+					for (BlacklistedCategory c : channels) {
+						sb.append(c.getId().getCategory() + ", ");
+					}
+					String result = sb.toString();
+					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					event.getHook().editOriginal(result).queue();
+				}
+			} else if (method.equals(SUBCMD_ADD)) {
+				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				boolean success = blCategoryService.add(id, channel);
+				if (success) {
+					event.getHook().editOriginal("Added category '"+channel+"' to the blacklist.").queue();
+				} else {
+					event.getHook().editOriginal("Category '"+channel+"' was already in the blacklist. Nothing added.").queue();
+				}
+			}
+		}
 	}
 
 }
