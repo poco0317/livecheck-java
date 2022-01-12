@@ -11,6 +11,6 @@ import bar.barinade.livecheck.discord.serverconfig.data.WhitelistedCategoryId;
 @Repository
 public interface WhitelistedCategoryRepo extends JpaRepository<WhitelistedCategory, WhitelistedCategoryId> {
 
-	List<WhitelistedCategory> findByWhitelistedCategoryIdGuildId(Long id);
-	Long deleteByWhitelistedCategoryIdGuildId(Long id);
+	List<WhitelistedCategory> findByIdGuildId(Long id);
+	Long deleteByIdGuildId(Long id);
 }

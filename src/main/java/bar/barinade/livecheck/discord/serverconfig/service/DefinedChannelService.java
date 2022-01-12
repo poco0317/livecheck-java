@@ -62,13 +62,13 @@ public class DefinedChannelService {
 	}
 	
 	public Long delAll(Long guildId) {
-		Long deleted = channelRepo.deleteByDefinedChannelIdGuildId(guildId);
+		Long deleted = channelRepo.deleteByIdGuildId(guildId);
 		m_logger.info("Guild {} deleted all channels from watch list (count {})", guildId, deleted);
 		return deleted;
 	}
 	
 	public List<DefinedChannel> getAll(Long guildId) {
-		List<DefinedChannel> list = channelRepo.findByDefinedChannelIdGuildId(guildId);
+		List<DefinedChannel> list = channelRepo.findByIdGuildId(guildId);
 		m_logger.info("Guild {} displayed all channels in watch list (count {})", guildId, list.size());
 		return list;
 	}

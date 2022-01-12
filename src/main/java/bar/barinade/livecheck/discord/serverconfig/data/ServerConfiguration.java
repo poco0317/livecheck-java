@@ -30,22 +30,22 @@ public class ServerConfiguration {
 	@Column(name = "mention_role_id", nullable = true)
 	private Long mentionRoleId;
 	
-	@OneToMany(mappedBy = "guild")
+	@OneToMany(mappedBy = "id.guild")
 	private Set<BlacklistedCategory> blacklistedCategories;
 	
-	@OneToMany(mappedBy = "guild")
+	@OneToMany(mappedBy = "id.guild")
 	private Set<BlacklistedChannel> blacklistedChannels;
 	
-	@OneToMany(mappedBy = "guild")
+	@OneToMany(mappedBy = "id.guild")
 	private Set<WhitelistedCategory> whitelistedCategories;
 	
-	@OneToMany(mappedBy = "guild")
+	@OneToMany(mappedBy = "id.guild")
 	private Set<WhitelistedChannel> whitelistedChannels;
 	
-	@OneToMany(mappedBy = "guild")
+	@OneToMany(mappedBy = "id.guild")
 	private Set<DefinedCategory> definedCategories;
 	
-	@OneToMany(mappedBy = "guild")
+	@OneToMany(mappedBy = "id.guild")
 	private Set<DefinedChannel> definedChannels;
 
 	public Long getId() {

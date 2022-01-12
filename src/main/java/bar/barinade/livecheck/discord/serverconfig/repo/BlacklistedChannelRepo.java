@@ -11,6 +11,6 @@ import bar.barinade.livecheck.discord.serverconfig.data.BlacklistedChannelId;
 @Repository
 public interface BlacklistedChannelRepo extends JpaRepository<BlacklistedChannel, BlacklistedChannelId> {
 
-	List<BlacklistedChannel> findByBlacklistedChannelIdGuildId(Long id);
-	Long deleteByBlacklistedChannelIdGuildId(Long id);
+	List<BlacklistedChannel> findByIdGuildId(Long id);
+	Long deleteByIdGuildId(Long id);
 }

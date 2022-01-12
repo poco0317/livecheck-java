@@ -11,6 +11,6 @@ import bar.barinade.livecheck.discord.serverconfig.data.DefinedCategoryId;
 @Repository
 public interface DefinedCategoryRepo extends JpaRepository<DefinedCategory, DefinedCategoryId> {
 
-	List<DefinedCategory> findByDefinedCategoryIdGuildId(Long id);
-	Long deleteByDefinedCategoryIdGuildId(Long id);
+	List<DefinedCategory> findByIdGuildId(Long id);
+	Long deleteByIdGuildId(Long id);
 }

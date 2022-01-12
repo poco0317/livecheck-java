@@ -11,7 +11,7 @@ import bar.barinade.livecheck.discord.serverconfig.data.DefinedChannelId;
 @Repository
 public interface DefinedChannelRepo extends JpaRepository<DefinedChannel, DefinedChannelId> {
 	
-	List<DefinedChannel> findByDefinedChannelIdGuildId(Long id);
-	Long deleteByDefinedChannelIdGuildId(Long id);
+	List<DefinedChannel> findByIdGuildId(Long id);
+	Long deleteByIdGuildId(Long id);
 
 }

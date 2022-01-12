@@ -80,9 +80,8 @@ public class BotManager {
 		builder.setActivity(Activity.playing("Gaming"));
 		
 		// how to care about commands
-		final CommandHandlerBase basicCommands = springContext.getBean(BasicCommandHandler.class);
 		final CommandHandlerBase configCommands = springContext.getBean(ServerConfigCommandHandler.class);
-		builder.addEventListeners(basicCommands, configCommands);
+		builder.addEventListeners(configCommands);
 		
 		// about to finish making the client...
 		m_logger.info("Waiting for login");
@@ -95,7 +94,7 @@ public class BotManager {
 		
 		// how to care about slash commands
 		// have to do this after trying to log in
-		upsertHandlerCommands(result, basicCommands, configCommands);
+		upsertHandlerCommands(result, configCommands);
 		
 		m_logger.info("BotManager initialize finished");
 	}

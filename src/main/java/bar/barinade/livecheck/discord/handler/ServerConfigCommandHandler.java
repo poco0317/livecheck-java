@@ -40,11 +40,11 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private static final String GROUPCMD_NAME_TXTCHAN = "channel";
 	private static final String GROUPCMD_NAME_REQUIREDTITLE = "requiredtitle";
 	private static final String GROUPCMD_NAME_CATEGORY = "category";
-	private static final String GROUPCMD_NAME_CATEGORYWHITELIST = "whitelist category";
-	private static final String GROUPCMD_NAME_CATEGORYBLACKLIST = "blacklist category";
+	private static final String GROUPCMD_NAME_CATEGORYWHITELIST = "category_wl";
+	private static final String GROUPCMD_NAME_CATEGORYBLACKLIST = "category_bl";
 	private static final String GROUPCMD_NAME_STREAMER = "streamer";
-	private static final String GROUPCMD_NAME_STREAMERWHITELIST = "whitelist streamer";
-	private static final String GROUPCMD_NAME_STREAMERBLACKLIST = "blacklist streamer";
+	private static final String GROUPCMD_NAME_STREAMERWHITELIST = "streamer_wl";
+	private static final String GROUPCMD_NAME_STREAMERBLACKLIST = "streamer_bl";
 	private static final String GROUPCMD_NAME_LIVEROLE = "liverole";
 	private static final String SUBCMD_ADD = "add";
 	private static final String SUBCMD_REMOVE = "remove";
@@ -57,10 +57,10 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private static final String OPTION_REGEX = "regex";
 	private static final String OPTION_ROLE = "role";
 	
-	private static final String EXPLAIN_STREAMER_WHITELIST = " Having this whitelist set means all streamers must be in this list, if detected via category.";
-	private static final String EXPLAIN_CATEGORY_WHITELIST = " Having this whitelist set means all categories must be in this list, if detected via streamer.";
-	private static final String EXPLAIN_STREAMER_BLACKLIST = " Having this blacklist set means any streamer found in this list will not show up when live.";
-	private static final String EXPLAIN_CATEGORY_BLACKLIST = " Having this blacklist set means any streamer with a category category found in this list will not show up when live.";
+	private static final String EXPLAIN_STREAMER_WHITELIST = "If in use, all streamers must be in this list, if detected via category.";
+	private static final String EXPLAIN_CATEGORY_WHITELIST = "If in use, all categories must be in this list, if detected via streamer.";
+	private static final String EXPLAIN_STREAMER_BLACKLIST = "If in use, any streamer found in this list will not show up when live.";
+	private static final String EXPLAIN_CATEGORY_BLACKLIST = "If in use, any streamer with a category category in this list will not show up.";
 	
 	@Autowired
 	private ServerConfigService configService;
@@ -89,7 +89,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 						new SubcommandGroupData(GROUPCMD_NAME_REQUIREDTITLE, "Modify the required title Regular Expression.")
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove the required title Regular Expression."),
-								new SubcommandData(SUBCMD_SET, "Set the required title Regular Expression. If set, all stream titles must match to show up.")
+								new SubcommandData(SUBCMD_SET, "Set the required title Regular Expression. If set, all stream titles must match.")
 									.addOption(OptionType.STRING, OPTION_REGEX, "Regular Expression to match to stream titles", true)
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_TXTCHAN, "Modify the output channel for livestreams in this server.")
@@ -116,38 +116,38 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 								new SubcommandData(SUBCMD_LIST, "View the list of streamers being watched."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all streamers from the watchlist.")
 						),
-						new SubcommandGroupData(GROUPCMD_NAME_STREAMERWHITELIST, "Modify the streamer whitelist." + EXPLAIN_STREAMER_WHITELIST)
+						new SubcommandGroupData(GROUPCMD_NAME_STREAMERWHITELIST, EXPLAIN_STREAMER_WHITELIST)
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove a streamer from the whitelist.")
 									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to remove", true),
-								new SubcommandData(SUBCMD_ADD, "Add a streamer to the whitelist." + EXPLAIN_STREAMER_WHITELIST)
+								new SubcommandData(SUBCMD_ADD, "Add a streamer to the whitelist.")
 									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to add", true),
 								new SubcommandData(SUBCMD_LIST, "View the streamer whitelist."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all streamers from the whitelist.")
 						),
-						new SubcommandGroupData(GROUPCMD_NAME_STREAMERBLACKLIST, "Modify the streamer blacklist." + EXPLAIN_STREAMER_BLACKLIST)
+						new SubcommandGroupData(GROUPCMD_NAME_STREAMERBLACKLIST, EXPLAIN_STREAMER_BLACKLIST)
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove a streamer from the blacklist.")
 									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to remove", true),
-								new SubcommandData(SUBCMD_ADD, "Add a streamer to the blacklist." + EXPLAIN_STREAMER_BLACKLIST)
+								new SubcommandData(SUBCMD_ADD, "Add a streamer to the blacklist.")
 									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to add", true),
 								new SubcommandData(SUBCMD_LIST, "View the streamer blacklist."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all streamers from the blacklist.")
 						),
-						new SubcommandGroupData(GROUPCMD_NAME_CATEGORYWHITELIST, "Modify the category whitelist." + EXPLAIN_CATEGORY_WHITELIST)
+						new SubcommandGroupData(GROUPCMD_NAME_CATEGORYWHITELIST, EXPLAIN_CATEGORY_WHITELIST)
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove a category from the whitelist.")
 									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
-								new SubcommandData(SUBCMD_ADD, "Add a category to the whitelist." + EXPLAIN_CATEGORY_WHITELIST)
+								new SubcommandData(SUBCMD_ADD, "Add a category to the whitelist.")
 									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
 								new SubcommandData(SUBCMD_LIST, "View the category whitelist."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all categories from the whitelist.")
 						),
-						new SubcommandGroupData(GROUPCMD_NAME_CATEGORYBLACKLIST, "Modify the category blacklist." + EXPLAIN_CATEGORY_BLACKLIST)
+						new SubcommandGroupData(GROUPCMD_NAME_CATEGORYBLACKLIST, EXPLAIN_CATEGORY_BLACKLIST)
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove a category from the blacklist.")
 									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
-								new SubcommandData(SUBCMD_ADD, "Add a category to the blacklist." + EXPLAIN_CATEGORY_BLACKLIST)
+								new SubcommandData(SUBCMD_ADD, "Add a category to the blacklist.")
 									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
 								new SubcommandData(SUBCMD_LIST, "View the category blacklist."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all categories from the blacklist.")

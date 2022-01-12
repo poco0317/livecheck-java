@@ -62,13 +62,13 @@ public class WhitelistedCategoryService {
 	}
 	
 	public Long delAll(Long guildId) {
-		Long deleted = categoryRepo.deleteByWhitelistedCategoryIdGuildId(guildId);
+		Long deleted = categoryRepo.deleteByIdGuildId(guildId);
 		m_logger.info("Guild {} deleted all categories from whitelist (count {})", guildId, deleted);
 		return deleted;
 	}
 	
 	public List<WhitelistedCategory> getAll(Long guildId) {
-		List<WhitelistedCategory> list = categoryRepo.findByWhitelistedCategoryIdGuildId(guildId);
+		List<WhitelistedCategory> list = categoryRepo.findByIdGuildId(guildId);
 		m_logger.info("Guild {} displayed all categories in whitelist (count {})", guildId, list.size());
 		return list;
 	}

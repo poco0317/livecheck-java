@@ -62,13 +62,13 @@ public class BlacklistedCategoryService {
 	}
 	
 	public Long delAll(Long guildId) {
-		Long deleted = categoryRepo.deleteByBlacklistedCategoryIdGuildId(guildId);
+		Long deleted = categoryRepo.deleteByIdGuildId(guildId);
 		m_logger.info("Guild {} deleted all categories from blacklist (count {})", guildId, deleted);
 		return deleted;
 	}
 	
 	public List<BlacklistedCategory> getAll(Long guildId) {
-		List<BlacklistedCategory> list = categoryRepo.findByBlacklistedCategoryIdGuildId(guildId);
+		List<BlacklistedCategory> list = categoryRepo.findByIdGuildId(guildId);
 		m_logger.info("Guild {} displayed all categories in blacklist (count {})", guildId, list.size());
 		return list;
 	}

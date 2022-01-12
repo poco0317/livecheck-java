@@ -11,7 +11,7 @@ import bar.barinade.livecheck.discord.serverconfig.data.BlacklistedCategoryId;
 @Repository
 public interface BlacklistedCategoryRepo extends JpaRepository<BlacklistedCategory, BlacklistedCategoryId> {
 	
-	List<BlacklistedCategory> findByBlacklistedCategoryIdGuildId(Long id);
-	Long deleteByBlacklistedCategoryIdGuildId(Long id);
+	List<BlacklistedCategory> findByIdGuildId(Long id);
+	Long deleteByIdGuildId(Long id);
 
 }

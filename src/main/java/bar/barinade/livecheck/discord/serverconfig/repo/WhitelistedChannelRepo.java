@@ -11,6 +11,6 @@ import bar.barinade.livecheck.discord.serverconfig.data.WhitelistedChannelId;
 @Repository
 public interface WhitelistedChannelRepo extends JpaRepository<WhitelistedChannel, WhitelistedChannelId> {
 
-	List<WhitelistedChannel> findByWhitelistedChannelIdGuildId(Long id);
-	Long deleteByWhitelistedChannelIdGuildId(Long id);
+	List<WhitelistedChannel> findByIdGuildId(Long id);
+	Long deleteByIdGuildId(Long id);
 }

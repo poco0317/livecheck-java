@@ -62,13 +62,13 @@ public class BlacklistedChannelService {
 	}
 	
 	public Long delAll(Long guildId) {
-		Long deleted = channelRepo.deleteByBlacklistedChannelIdGuildId(guildId);
+		Long deleted = channelRepo.deleteByIdGuildId(guildId);
 		m_logger.info("Guild {} deleted all categories from blacklist (count {})", guildId, deleted);
 		return deleted;
 	}
 	
 	public List<BlacklistedChannel> getAll(Long guildId) {
-		List<BlacklistedChannel> list = channelRepo.findByBlacklistedChannelIdGuildId(guildId);
+		List<BlacklistedChannel> list = channelRepo.findByIdGuildId(guildId);
 		m_logger.info("Guild {} displayed all categories in blacklist (count {})", guildId, list.size());
 		return list;
 	}

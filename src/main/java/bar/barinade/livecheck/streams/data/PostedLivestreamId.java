@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
@@ -23,7 +24,10 @@ public class PostedLivestreamId implements Serializable {
 	private Long messageId;
 	
 	@OneToOne
-	@JoinColumn(name = "stream_info_id", nullable = false)
+	@JoinColumns({
+		@JoinColumn(name = "platform", nullable = false),
+		@JoinColumn(name = "name", nullable = false)
+	})
 	private LivestreamInfo info;
 	
 	public PostedLivestreamId() {}

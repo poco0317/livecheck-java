@@ -62,13 +62,13 @@ public class DefinedCategoryService {
 	}
 	
 	public Long delAll(Long guildId) {
-		Long deleted = categoryRepo.deleteByDefinedCategoryIdGuildId(guildId);
+		Long deleted = categoryRepo.deleteByIdGuildId(guildId);
 		m_logger.info("Guild {} deleted all categories from watch list (count {})", guildId, deleted);
 		return deleted;
 	}
 	
 	public List<DefinedCategory> getAll(Long guildId) {
-		List<DefinedCategory> list = categoryRepo.findByDefinedCategoryIdGuildId(guildId);
+		List<DefinedCategory> list = categoryRepo.findByIdGuildId(guildId);
 		m_logger.info("Guild {} displayed all categories in watch list (count {})", guildId, list.size());
 		return list;
 	}
