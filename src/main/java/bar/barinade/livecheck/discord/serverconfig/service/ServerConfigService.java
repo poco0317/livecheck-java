@@ -1,6 +1,6 @@
 package bar.barinade.livecheck.discord.serverconfig.service;
 
-import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +17,18 @@ public class ServerConfigService {
 	@Autowired
 	private ServerConfigurationRepo configRepo;
 	
+	@Transactional
 	public ServerConfiguration getConfig(Long guildId) {
-		try {
-			return configRepo.getById(guildId);
-		} catch (EntityNotFoundException e) {
-			ServerConfiguration config = new ServerConfiguration();
+		ServerConfiguration config = configRepo.findById(guildId).orElse(null);
+		if (config == null) {
+			config = new ServerConfiguration();
 			config.setId(guildId);
-			return configRepo.saveAndFlush(config);
+			config = configRepo.saveAndFlush(config);
 		}
+		return config;
 	}
 	
+	@Transactional
 	public void setRequiredTitleRegex(Long guildId, String regex) {
 		ServerConfiguration config = getConfig(guildId);
 		config.setTitleRegex(regex);
@@ -34,18 +36,35 @@ public class ServerConfigService {
 		m_logger.info("Guild {} set title regex to {}", guildId, regex);
 	}
 	
-	public void setTextChannel(Long guildId, Long channelId) {
+	@Transactional
+	public String getRequiredTitleRegex(Long guildId) {
+		return getConfig(guildId).getTitleRegex();
+	}
+	
+	@Transactional
+	public void setOutputChannel(Long guildId, Long channelId) {
 		ServerConfiguration config = getConfig(guildId);
 		config.setChannelId(channelId);
 		configRepo.saveAndFlush(config);
 		m_logger.info("Guild {} set output channel to {}", guildId, channelId);
 	}
 	
-	public void setLiveRole(Long guildId, Long roleId) {
+	@Transactional
+	public Long getOutputChannel(Long guildId) {
+		return getConfig(guildId).getChannelId();
+	}
+	
+	@Transactional
+	public void setMentionRole(Long guildId, Long roleId) {
 		ServerConfiguration config = getConfig(guildId);
 		config.setMentionRoleId(roleId);
 		configRepo.saveAndFlush(config);
 		m_logger.info("Guild {} set live-mention role to {}", guildId, roleId);
+	}
+	
+	@Transactional
+	public Long getMentionRole(Long guildId) {
+		return getConfig(guildId).getMentionRoleId();
 	}
 	
 }

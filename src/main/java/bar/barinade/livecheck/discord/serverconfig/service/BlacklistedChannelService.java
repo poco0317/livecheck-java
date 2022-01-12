@@ -2,7 +2,7 @@ package bar.barinade.livecheck.discord.serverconfig.service;
 
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +25,14 @@ public class BlacklistedChannelService {
 	@Autowired
 	private BlacklistedChannelRepo channelRepo;
 	
+	@Transactional
 	public BlacklistedChannel get(Long guildId, String channel) {
 		ServerConfiguration config = configService.getConfig(guildId);
 		BlacklistedChannelId id = new BlacklistedChannelId(channel, config);
-		try {
-			return channelRepo.getById(id);
-		} catch (EntityNotFoundException e) {
-			return null;
-		}
+		return channelRepo.findById(id).orElse(null);
 	}
 	
+	@Transactional
 	public boolean add(Long guildId, String channel) {
 		BlacklistedChannel channelWatch = get(guildId, channel);
 		if (channelWatch == null) {
@@ -49,6 +47,7 @@ public class BlacklistedChannelService {
 		}
 	}
 	
+	@Transactional
 	public boolean remove(Long guildId, String channel) {
 		BlacklistedChannel channelWatch = get(guildId, channel);
 		if (channelWatch == null) {
@@ -61,12 +60,14 @@ public class BlacklistedChannelService {
 		}
 	}
 	
+	@Transactional
 	public Long delAll(Long guildId) {
 		Long deleted = channelRepo.deleteByIdGuildId(guildId);
 		m_logger.info("Guild {} deleted all categories from blacklist (count {})", guildId, deleted);
 		return deleted;
 	}
 	
+	@Transactional
 	public List<BlacklistedChannel> getAll(Long guildId) {
 		List<BlacklistedChannel> list = channelRepo.findByIdGuildId(guildId);
 		m_logger.info("Guild {} displayed all categories in blacklist (count {})", guildId, list.size());

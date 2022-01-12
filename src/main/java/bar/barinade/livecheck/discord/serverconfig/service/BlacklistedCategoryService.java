@@ -2,7 +2,7 @@ package bar.barinade.livecheck.discord.serverconfig.service;
 
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +25,14 @@ public class BlacklistedCategoryService {
 	@Autowired
 	private BlacklistedCategoryRepo categoryRepo;
 	
+	@Transactional
 	public BlacklistedCategory get(Long guildId, String category) {
 		ServerConfiguration config = configService.getConfig(guildId);
 		BlacklistedCategoryId id = new BlacklistedCategoryId(category, config);
-		try {
-			return categoryRepo.getById(id);
-		} catch (EntityNotFoundException e) {
-			return null;
-		}
+		return categoryRepo.findById(id).orElse(null);
 	}
 	
+	@Transactional
 	public boolean add(Long guildId, String category) {
 		BlacklistedCategory categoryWatch = get(guildId, category);
 		if (categoryWatch == null) {
@@ -49,6 +47,7 @@ public class BlacklistedCategoryService {
 		}
 	}
 	
+	@Transactional
 	public boolean remove(Long guildId, String category) {
 		BlacklistedCategory categoryWatch = get(guildId, category);
 		if (categoryWatch == null) {
@@ -61,12 +60,14 @@ public class BlacklistedCategoryService {
 		}
 	}
 	
+	@Transactional
 	public Long delAll(Long guildId) {
 		Long deleted = categoryRepo.deleteByIdGuildId(guildId);
 		m_logger.info("Guild {} deleted all categories from blacklist (count {})", guildId, deleted);
 		return deleted;
 	}
 	
+	@Transactional
 	public List<BlacklistedCategory> getAll(Long guildId) {
 		List<BlacklistedCategory> list = categoryRepo.findByIdGuildId(guildId);
 		m_logger.info("Guild {} displayed all categories in blacklist (count {})", guildId, list.size());

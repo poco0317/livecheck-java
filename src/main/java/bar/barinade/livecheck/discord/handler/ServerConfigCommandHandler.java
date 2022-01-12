@@ -226,7 +226,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				configService.setRequiredTitleRegex(id, regex);
 				event.getHook().editOriginal("Set title regex to: "+regex).queue();
 			} else if (method.equals(SUBCMD_VIEW)) {
-				final String regex = configService.getConfig(id).getTitleRegex();
+				final String regex = configService.getRequiredTitleRegex(id);
 				if (regex == null || regex.isEmpty()) {
 					event.getHook().editOriginal("There is no regex set.").queue();
 				} else {
@@ -247,7 +247,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 			final Long id = event.getGuild().getIdLong();
 			
 			if (method.equals(SUBCMD_REMOVE)) {
-				configService.setTextChannel(id, null);
+				configService.setOutputChannel(id, null);
 				event.getHook().editOriginal("Removed output channel").queue();
 			} else if (method.equals(SUBCMD_SET)) {
 				final ChannelType chantype = event.getOption(OPTION_CHANNEL).getChannelType();
@@ -256,11 +256,11 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 					return;
 				}
 				final MessageChannel channel = event.getOption(OPTION_CHANNEL).getAsMessageChannel();
-				configService.setTextChannel(id, channel.getIdLong());
+				configService.setOutputChannel(id, channel.getIdLong());
 				event.getHook().editOriginal("Set output channel to: "+channel.getName()).queue();
 			} else if (method.equals(SUBCMD_VIEW)) {
-				final long channelId = configService.getConfig(id).getChannelId();
-				final MessageChannel channel = event.getGuild().getTextChannelById(channelId);
+				final Long channelId = configService.getOutputChannel(id);
+				final MessageChannel channel = event.getGuild().getTextChannelById(channelId != null ? channelId : 0L);
 				if (channel != null) {
 					event.getHook().editOriginal("The livestream output channel is set to: "+channel.getName()).queue();
 				} else {
@@ -281,15 +281,15 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 			final Long id = event.getGuild().getIdLong();
 			
 			if (method.equals(SUBCMD_REMOVE)) {
-				configService.setLiveRole(id, null);
+				configService.setMentionRole(id, null);
 				event.getHook().editOriginal("Removed mention role").queue();
 			} else if (method.equals(SUBCMD_SET)) {
 				final Role role = event.getOption(OPTION_ROLE).getAsRole();
-				configService.setLiveRole(id, role.getIdLong());	
+				configService.setMentionRole(id, role.getIdLong());	
 				event.getHook().editOriginal("Set mention role to: "+role.getName()+". This will be mentioned every time any streamer goes live.").queue();
 			} else if (method.equals(SUBCMD_VIEW)) {
-				final long roleId = configService.getConfig(id).getMentionRoleId();
-				final Role role = event.getGuild().getRoleById(roleId);
+				final Long roleId = configService.getMentionRole(id);
+				final Role role = event.getGuild().getRoleById(roleId != null ? roleId : 0L);
 				if (role != null) {
 					event.getHook().editOriginal("The mention role is set to: "+role.getName()).queue();
 				} else {

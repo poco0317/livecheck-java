@@ -2,7 +2,7 @@ package bar.barinade.livecheck.discord.serverconfig.service;
 
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +25,14 @@ public class DefinedChannelService {
 	@Autowired
 	private DefinedChannelRepo channelRepo;
 	
+	@Transactional
 	public DefinedChannel get(Long guildId, String channel) {
 		ServerConfiguration config = configService.getConfig(guildId);
 		DefinedChannelId id = new DefinedChannelId(channel, config);
-		try {
-			return channelRepo.getById(id);
-		} catch (EntityNotFoundException e) {
-			return null;
-		}
+		return channelRepo.findById(id).orElse(null);
 	}
 	
+	@Transactional
 	public boolean add(Long guildId, String channel) {
 		DefinedChannel channelWatch = get(guildId, channel);
 		if (channelWatch == null) {
@@ -49,6 +47,7 @@ public class DefinedChannelService {
 		}
 	}
 	
+	@Transactional
 	public boolean remove(Long guildId, String channel) {
 		DefinedChannel channelWatch = get(guildId, channel);
 		if (channelWatch == null) {
@@ -61,12 +60,14 @@ public class DefinedChannelService {
 		}
 	}
 	
+	@Transactional
 	public Long delAll(Long guildId) {
 		Long deleted = channelRepo.deleteByIdGuildId(guildId);
 		m_logger.info("Guild {} deleted all channels from watch list (count {})", guildId, deleted);
 		return deleted;
 	}
 	
+	@Transactional
 	public List<DefinedChannel> getAll(Long guildId) {
 		List<DefinedChannel> list = channelRepo.findByIdGuildId(guildId);
 		m_logger.info("Guild {} displayed all channels in watch list (count {})", guildId, list.size());

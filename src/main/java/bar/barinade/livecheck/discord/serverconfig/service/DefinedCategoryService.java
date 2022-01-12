@@ -2,7 +2,7 @@ package bar.barinade.livecheck.discord.serverconfig.service;
 
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +25,14 @@ public class DefinedCategoryService {
 	@Autowired
 	private DefinedCategoryRepo categoryRepo;
 	
+	@Transactional
 	public DefinedCategory get(Long guildId, String category) {
 		ServerConfiguration config = configService.getConfig(guildId);
 		DefinedCategoryId id = new DefinedCategoryId(category, config);
-		try {
-			return categoryRepo.getById(id);
-		} catch (EntityNotFoundException e) {
-			return null;
-		}
+		return categoryRepo.findById(id).orElse(null);
 	}
 	
+	@Transactional
 	public boolean add(Long guildId, String category) {
 		DefinedCategory categoryWatch = get(guildId, category);
 		if (categoryWatch == null) {
@@ -49,6 +47,7 @@ public class DefinedCategoryService {
 		}
 	}
 	
+	@Transactional
 	public boolean remove(Long guildId, String category) {
 		DefinedCategory categoryWatch = get(guildId, category);
 		if (categoryWatch == null) {
@@ -61,12 +60,14 @@ public class DefinedCategoryService {
 		}
 	}
 	
+	@Transactional
 	public Long delAll(Long guildId) {
 		Long deleted = categoryRepo.deleteByIdGuildId(guildId);
 		m_logger.info("Guild {} deleted all categories from watch list (count {})", guildId, deleted);
 		return deleted;
 	}
 	
+	@Transactional
 	public List<DefinedCategory> getAll(Long guildId) {
 		List<DefinedCategory> list = categoryRepo.findByIdGuildId(guildId);
 		m_logger.info("Guild {} displayed all categories in watch list (count {})", guildId, list.size());
