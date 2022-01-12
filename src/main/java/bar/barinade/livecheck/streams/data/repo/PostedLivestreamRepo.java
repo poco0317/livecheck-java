@@ -11,6 +11,6 @@ import bar.barinade.livecheck.streams.data.PostedLivestreamId;
 @Repository
 public interface PostedLivestreamRepo extends JpaRepository<PostedLivestream, PostedLivestreamId> {
 
-	List<PostedLivestream> findByPostedLivestreamIdGuildId(Long id);
-	Long deleteByPostedLivestreamIdGuildId(Long id);
+	List<PostedLivestream> findByIdGuildId(Long id);
+	Long deleteByIdGuildId(Long id);
 }

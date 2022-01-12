@@ -49,7 +49,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private static final String SUBCMD_ADD = "add";
 	private static final String SUBCMD_REMOVE = "remove";
 	private static final String SUBCMD_SET = "set";
-	private static final String SUBCMD_LIST = "list";
+	private static final String SUBCMD_VIEW = "view";
 	private static final String SUBCMD_DELALL = "delall";
 	private static final String OPTION_CHANNEL = "channel";
 	private static final String OPTION_STREAMER = "streamer";
@@ -60,7 +60,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private static final String EXPLAIN_STREAMER_WHITELIST = "If in use, all streamers must be in this list, if detected via category.";
 	private static final String EXPLAIN_CATEGORY_WHITELIST = "If in use, all categories must be in this list, if detected via streamer.";
 	private static final String EXPLAIN_STREAMER_BLACKLIST = "If in use, any streamer found in this list will not show up when live.";
-	private static final String EXPLAIN_CATEGORY_BLACKLIST = "If in use, any streamer with a category category in this list will not show up.";
+	private static final String EXPLAIN_CATEGORY_BLACKLIST = "If in use, any streamer with a category in this list will not show up.";
 	
 	@Autowired
 	private ServerConfigService configService;
@@ -90,13 +90,15 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove the required title Regular Expression."),
 								new SubcommandData(SUBCMD_SET, "Set the required title Regular Expression. If set, all stream titles must match.")
-									.addOption(OptionType.STRING, OPTION_REGEX, "Regular Expression to match to stream titles", true)
+									.addOption(OptionType.STRING, OPTION_REGEX, "Regular Expression to match to stream titles", true),
+								new SubcommandData(SUBCMD_VIEW, "View the required title Regular Expression.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_TXTCHAN, "Modify the output channel for livestreams in this server.")
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Unset the output channel for livestreams."),
 								new SubcommandData(SUBCMD_SET, "Set the output channel for livestreams.")
-									.addOption(OptionType.CHANNEL, OPTION_CHANNEL, "Output channel for livestreams", true)
+									.addOption(OptionType.CHANNEL, OPTION_CHANNEL, "Output channel for livestreams", true),
+								new SubcommandData(SUBCMD_VIEW, "View the output channel for livestreams.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_CATEGORY, "Add categories to or remove categories from the watchlist.")
 						.addSubcommands(
@@ -104,7 +106,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to remove", true),
 								new SubcommandData(SUBCMD_ADD, "Add a category to the watchlist.")
 									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
-								new SubcommandData(SUBCMD_LIST, "View the list of categories being watched."),
+								new SubcommandData(SUBCMD_VIEW, "View the list of categories being watched."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all categories from the watchlist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_STREAMER, "Add streamers to or remove streamers from the watchlist.")
@@ -113,50 +115,51 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to remove", true),
 								new SubcommandData(SUBCMD_ADD, "Add a streamer to the watchlist.")
 									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to add", true),
-								new SubcommandData(SUBCMD_LIST, "View the list of streamers being watched."),
+								new SubcommandData(SUBCMD_VIEW, "View the list of streamers being watched."),
 								new SubcommandData(SUBCMD_DELALL, "Remove all streamers from the watchlist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_STREAMERWHITELIST, EXPLAIN_STREAMER_WHITELIST)
 						.addSubcommands(
-								new SubcommandData(SUBCMD_REMOVE, "Remove a streamer from the whitelist.")
+								new SubcommandData(SUBCMD_REMOVE, "Remove from whitelist: "+EXPLAIN_STREAMER_WHITELIST)
 									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to remove", true),
-								new SubcommandData(SUBCMD_ADD, "Add a streamer to the whitelist.")
+								new SubcommandData(SUBCMD_ADD, "Add to whitelist: "+EXPLAIN_STREAMER_WHITELIST)
 									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to add", true),
-								new SubcommandData(SUBCMD_LIST, "View the streamer whitelist."),
+								new SubcommandData(SUBCMD_VIEW, "View the whitelist: "+EXPLAIN_STREAMER_WHITELIST),
 								new SubcommandData(SUBCMD_DELALL, "Remove all streamers from the whitelist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_STREAMERBLACKLIST, EXPLAIN_STREAMER_BLACKLIST)
 						.addSubcommands(
-								new SubcommandData(SUBCMD_REMOVE, "Remove a streamer from the blacklist.")
+								new SubcommandData(SUBCMD_REMOVE, "Remove from blacklist: "+EXPLAIN_STREAMER_BLACKLIST)
 									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to remove", true),
-								new SubcommandData(SUBCMD_ADD, "Add a streamer to the blacklist.")
+								new SubcommandData(SUBCMD_ADD, "Add to blacklist: "+EXPLAIN_STREAMER_BLACKLIST)
 									.addOption(OptionType.STRING, OPTION_STREAMER, "Streamer to add", true),
-								new SubcommandData(SUBCMD_LIST, "View the streamer blacklist."),
+								new SubcommandData(SUBCMD_VIEW, "View the blacklist: "+EXPLAIN_STREAMER_BLACKLIST),
 								new SubcommandData(SUBCMD_DELALL, "Remove all streamers from the blacklist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_CATEGORYWHITELIST, EXPLAIN_CATEGORY_WHITELIST)
 						.addSubcommands(
-								new SubcommandData(SUBCMD_REMOVE, "Remove a category from the whitelist.")
+								new SubcommandData(SUBCMD_REMOVE, "Remove from whitelist: "+EXPLAIN_CATEGORY_WHITELIST)
 									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
-								new SubcommandData(SUBCMD_ADD, "Add a category to the whitelist.")
+								new SubcommandData(SUBCMD_ADD, "Add to whitelist: "+EXPLAIN_CATEGORY_WHITELIST)
 									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
-								new SubcommandData(SUBCMD_LIST, "View the category whitelist."),
+								new SubcommandData(SUBCMD_VIEW, "View the whitelist: "+EXPLAIN_CATEGORY_WHITELIST),
 								new SubcommandData(SUBCMD_DELALL, "Remove all categories from the whitelist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_CATEGORYBLACKLIST, EXPLAIN_CATEGORY_BLACKLIST)
 						.addSubcommands(
-								new SubcommandData(SUBCMD_REMOVE, "Remove a category from the blacklist.")
+								new SubcommandData(SUBCMD_REMOVE, "Remove from blacklist: "+EXPLAIN_CATEGORY_BLACKLIST)
 									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
-								new SubcommandData(SUBCMD_ADD, "Add a category to the blacklist.")
+								new SubcommandData(SUBCMD_ADD, "Add to blacklist: "+EXPLAIN_CATEGORY_BLACKLIST)
 									.addOption(OptionType.STRING, OPTION_CATEGORY, "Category to add", true),
-								new SubcommandData(SUBCMD_LIST, "View the category blacklist."),
+								new SubcommandData(SUBCMD_VIEW, "View the blacklist: "+EXPLAIN_CATEGORY_BLACKLIST),
 								new SubcommandData(SUBCMD_DELALL, "Remove all categories from the blacklist.")
 						),
 						new SubcommandGroupData(GROUPCMD_NAME_LIVEROLE, "Modify the role which is mentioned when any streamer goes live.")
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove the mention that occurs every time a streamer goes live."),
 								new SubcommandData(SUBCMD_SET, "Set the role which is mentioned every time a streamer goes live.")
-									.addOption(OptionType.ROLE, OPTION_ROLE, "Role to mention")
+									.addOption(OptionType.ROLE, OPTION_ROLE, "Role to mention"),
+								new SubcommandData(SUBCMD_VIEW, "View the role which is mentioned every time a streamer goes live.")
 						)
 				),
 		};
@@ -210,7 +213,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private void reqTitle(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
-			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
 			return;
 		} else {
 			final Long id = event.getGuild().getIdLong();
@@ -222,8 +225,10 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				final String regex = event.getOption(OPTION_REGEX).getAsString();
 				configService.setRequiredTitleRegex(id, regex);
 				event.getHook().editOriginal("Set title regex to: "+regex).queue();
+			} else if (method.equals(SUBCMD_VIEW)) {
+				
 			} else {
-				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
 			}
 		}
 	}
@@ -231,7 +236,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private void txtChannel(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
-			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
 			return;
 		} else {
 			final Long id = event.getGuild().getIdLong();
@@ -248,8 +253,10 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				final MessageChannel channel = event.getOption(OPTION_CHANNEL).getAsMessageChannel();
 				configService.setTextChannel(id, channel.getIdLong());
 				event.getHook().editOriginal("Set output channel to: "+channel.getName()).queue();
+			} else if (method.equals(SUBCMD_VIEW)) {
+				
 			} else {
-				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
 			}
 		}
 	}
@@ -257,7 +264,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private void liveRole(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
-			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
 			return;
 		} else {
 			final Long id = event.getGuild().getIdLong();
@@ -269,8 +276,10 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				final Role role = event.getOption(OPTION_ROLE).getAsRole();
 				configService.setLiveRole(id, role.getIdLong());	
 				event.getHook().editOriginal("Set mention role to: "+role.getName()+". This will be mentioned every time any streamer goes live.").queue();
+			} else if (method.equals(SUBCMD_VIEW)) {
+				
 			} else {
-				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"'").queue();
+				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
 			}
 		}
 	}
@@ -278,7 +287,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private void categoryWatch(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
-			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
 			return;
 		} else {
 			final Long id = event.getGuild().getIdLong();
@@ -294,7 +303,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				} else {
 					event.getHook().editOriginal("Category '"+category+"' was already not in watch list. Nothing removed.").queue();
 				}
-			} else if (method.equals(SUBCMD_LIST)) {
+			} else if (method.equals(SUBCMD_VIEW)) {
 				List<DefinedCategory> categories = categoryService.getAll(id);
 				if (categories == null || categories.size() == 0) {
 					event.getHook().editOriginal("There are no categories in the watch list.").queue();
@@ -323,7 +332,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private void streamerWatch(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
-			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
 			return;
 		} else {
 			final Long id = event.getGuild().getIdLong();
@@ -339,7 +348,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				} else {
 					event.getHook().editOriginal("Streamer '"+channel+"' was already not in watch list. Nothing removed.").queue();
 				}
-			} else if (method.equals(SUBCMD_LIST)) {
+			} else if (method.equals(SUBCMD_VIEW)) {
 				List<DefinedChannel> channels = channelService.getAll(id);
 				if (channels == null || channels.size() == 0) {
 					event.getHook().editOriginal("There are no streamers in the watch list.").queue();
@@ -368,7 +377,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private void wlStreamer(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
-			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
 			return;
 		} else {
 			final Long id = event.getGuild().getIdLong();
@@ -384,7 +393,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				} else {
 					event.getHook().editOriginal("Streamer '"+channel+"' was already not in whitelist. Nothing removed.").queue();
 				}
-			} else if (method.equals(SUBCMD_LIST)) {
+			} else if (method.equals(SUBCMD_VIEW)) {
 				List<WhitelistedChannel> channels = wlChannelService.getAll(id);
 				if (channels == null || channels.size() == 0) {
 					event.getHook().editOriginal("There are no streamers in the whitelist.").queue();
@@ -413,7 +422,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private void wlCategory(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
-			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
 			return;
 		} else {
 			final Long id = event.getGuild().getIdLong();
@@ -429,7 +438,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				} else {
 					event.getHook().editOriginal("Category '"+channel+"' was already not in whitelist. Nothing removed.").queue();
 				}
-			} else if (method.equals(SUBCMD_LIST)) {
+			} else if (method.equals(SUBCMD_VIEW)) {
 				List<WhitelistedCategory> channels = wlCategoryService.getAll(id);
 				if (channels == null || channels.size() == 0) {
 					event.getHook().editOriginal("There are no categories in the whitelist.").queue();
@@ -458,7 +467,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private void blStreamer(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
-			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
 			return;
 		} else {
 			final Long id = event.getGuild().getIdLong();
@@ -474,7 +483,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				} else {
 					event.getHook().editOriginal("Streamer '"+channel+"' was already not in blacklist. Nothing removed.").queue();
 				}
-			} else if (method.equals(SUBCMD_LIST)) {
+			} else if (method.equals(SUBCMD_VIEW)) {
 				List<BlacklistedChannel> channels = blChannelService.getAll(id);
 				if (channels == null || channels.size() == 0) {
 					event.getHook().editOriginal("There are no streamers in the blacklist.").queue();
@@ -503,7 +512,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private void blCategory(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
-			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_LIST+"' or '"+SUBCMD_DELALL+"'").queue();
+			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
 			return;
 		} else {
 			final Long id = event.getGuild().getIdLong();
@@ -519,7 +528,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				} else {
 					event.getHook().editOriginal("Category '"+channel+"' was already not in blacklist. Nothing removed.").queue();
 				}
-			} else if (method.equals(SUBCMD_LIST)) {
+			} else if (method.equals(SUBCMD_VIEW)) {
 				List<BlacklistedCategory> channels = blCategoryService.getAll(id);
 				if (channels == null || channels.size() == 0) {
 					event.getHook().editOriginal("There are no categories in the blacklist.").queue();
