@@ -77,10 +77,10 @@ public abstract class CommandHandlerBase extends ListenerAdapter {
 				event.deferReply().queue();
 				handler.invoke(this, event);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				m_logger.error("Error in method invokation: "+e.getMessage(), e);
+				m_logger.error("Error in method invocation: "+e.getMessage(), e);
 				event.getHook().editOriginal("Internal error occurred when processing command: "+e.getClass().getSimpleName()).queue();
 			} catch (RuntimeException e) {
-				m_logger.error("Error in method invokation: "+e.getMessage(), e);
+				m_logger.error("Error in method invocation: "+e.getMessage(), e);
 				event.getHook().editOriginal("Internal error occurred when processing command: "+e.getClass().getSimpleName()).queue();
 			}
 		}

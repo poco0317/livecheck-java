@@ -1,6 +1,7 @@
 package bar.barinade.livecheck.streams.data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -42,6 +43,23 @@ public class LivestreamInfoId implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, platform);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LivestreamInfoId other = (LivestreamInfoId) obj;
+		return Objects.equals(name, other.name) && platform == other.platform;
 	}
 	
 }

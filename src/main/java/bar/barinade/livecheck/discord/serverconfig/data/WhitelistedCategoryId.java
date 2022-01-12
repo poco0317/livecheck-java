@@ -1,6 +1,7 @@
 package bar.barinade.livecheck.discord.serverconfig.data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -40,6 +41,23 @@ public class WhitelistedCategoryId implements Serializable {
 
 	public void setGuild(ServerConfiguration guild) {
 		this.guild = guild;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(category, guild);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		WhitelistedCategoryId other = (WhitelistedCategoryId) obj;
+		return Objects.equals(category, other.category) && Objects.equals(guild, other.guild);
 	}
 	
 }

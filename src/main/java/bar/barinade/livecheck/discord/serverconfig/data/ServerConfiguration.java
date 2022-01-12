@@ -1,6 +1,7 @@
 package bar.barinade.livecheck.discord.serverconfig.data;
 
 
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -126,6 +127,31 @@ public class ServerConfiguration {
 
 	public void setDefinedChannels(Set<DefinedChannel> definedChannels) {
 		this.definedChannels = definedChannels;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(blacklistedCategories, blacklistedChannels, channelId, definedCategories, definedChannels,
+				id, mentionRoleId, titleRegex, whitelistedCategories, whitelistedChannels);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ServerConfiguration other = (ServerConfiguration) obj;
+		return Objects.equals(blacklistedCategories, other.blacklistedCategories)
+				&& Objects.equals(blacklistedChannels, other.blacklistedChannels)
+				&& Objects.equals(channelId, other.channelId)
+				&& Objects.equals(definedCategories, other.definedCategories)
+				&& Objects.equals(definedChannels, other.definedChannels) && Objects.equals(id, other.id)
+				&& Objects.equals(mentionRoleId, other.mentionRoleId) && Objects.equals(titleRegex, other.titleRegex)
+				&& Objects.equals(whitelistedCategories, other.whitelistedCategories)
+				&& Objects.equals(whitelistedChannels, other.whitelistedChannels);
 	}
 
 }
