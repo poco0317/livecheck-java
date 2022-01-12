@@ -45,7 +45,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private static final String GROUPCMD_NAME_STREAMER = "streamer";
 	private static final String GROUPCMD_NAME_STREAMERWHITELIST = "streamer_wl";
 	private static final String GROUPCMD_NAME_STREAMERBLACKLIST = "streamer_bl";
-	private static final String GROUPCMD_NAME_LIVEROLE = "liverole";
+	private static final String GROUPCMD_NAME_MENTIONROLE = "mentionrole";
 	private static final String SUBCMD_ADD = "add";
 	private static final String SUBCMD_REMOVE = "remove";
 	private static final String SUBCMD_SET = "set";
@@ -154,7 +154,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 								new SubcommandData(SUBCMD_VIEW, "View the blacklist: "+EXPLAIN_CATEGORY_BLACKLIST),
 								new SubcommandData(SUBCMD_DELALL, "Remove all categories from the blacklist.")
 						),
-						new SubcommandGroupData(GROUPCMD_NAME_LIVEROLE, "Modify the role which is mentioned when any streamer goes live.")
+						new SubcommandGroupData(GROUPCMD_NAME_MENTIONROLE, "Modify the role which is mentioned when any streamer goes live.")
 						.addSubcommands(
 								new SubcommandData(SUBCMD_REMOVE, "Remove the mention that occurs every time a streamer goes live."),
 								new SubcommandData(SUBCMD_SET, "Set the role which is mentioned every time a streamer goes live.")
@@ -196,8 +196,8 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				case GROUPCMD_NAME_CATEGORYBLACKLIST:
 					blCategory(event);
 					break;
-				case GROUPCMD_NAME_LIVEROLE:
-					liveRole(event);
+				case GROUPCMD_NAME_MENTIONROLE:
+					mentionRole(event);
 					break;
 				default:
 					m_logger.warn("{} attempted to use unknown group {}", event.getUser().getId(), group);
@@ -222,11 +222,16 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				configService.setRequiredTitleRegex(id, null);
 				event.getHook().editOriginal("Removed title regex").queue();
 			} else if (method.equals(SUBCMD_SET)) {
-				final String regex = event.getOption(OPTION_REGEX).getAsString();
+				final String regex = event.getOption(OPTION_REGEX).getAsString().strip();
 				configService.setRequiredTitleRegex(id, regex);
 				event.getHook().editOriginal("Set title regex to: "+regex).queue();
 			} else if (method.equals(SUBCMD_VIEW)) {
-				
+				final String regex = configService.getConfig(id).getTitleRegex();
+				if (regex == null || regex.isEmpty()) {
+					event.getHook().editOriginal("There is no regex set.").queue();
+				} else {
+					event.getHook().editOriginal("The title regex is: "+regex).queue();
+				}
 			} else {
 				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
 			}
@@ -254,14 +259,20 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				configService.setTextChannel(id, channel.getIdLong());
 				event.getHook().editOriginal("Set output channel to: "+channel.getName()).queue();
 			} else if (method.equals(SUBCMD_VIEW)) {
-				
+				final long channelId = configService.getConfig(id).getChannelId();
+				final MessageChannel channel = event.getGuild().getTextChannelById(channelId);
+				if (channel != null) {
+					event.getHook().editOriginal("The livestream output channel is set to: "+channel.getName()).queue();
+				} else {
+					event.getHook().editOriginal("There is no livestream output channel set.").queue();
+				}
 			} else {
 				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
 			}
 		}
 	}
 	
-	private void liveRole(SlashCommandEvent event) {
+	private void mentionRole(SlashCommandEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
 			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
@@ -277,7 +288,13 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				configService.setLiveRole(id, role.getIdLong());	
 				event.getHook().editOriginal("Set mention role to: "+role.getName()+". This will be mentioned every time any streamer goes live.").queue();
 			} else if (method.equals(SUBCMD_VIEW)) {
-				
+				final long roleId = configService.getConfig(id).getMentionRoleId();
+				final Role role = event.getGuild().getRoleById(roleId);
+				if (role != null) {
+					event.getHook().editOriginal("The mention role is set to: "+role.getName()).queue();
+				} else {
+					event.getHook().editOriginal("There is no mention role set.").queue();
+				}
 			} else {
 				event.getHook().editOriginal("Incorrect argument. Needs '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
 			}
