@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bar.barinade.livecheck.discord.serverconfig.data.BlacklistedChannel;
-import bar.barinade.livecheck.discord.serverconfig.data.BlacklistedChannelId;
 import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
+import bar.barinade.livecheck.discord.serverconfig.data.pk.BlacklistedChannelId;
 import bar.barinade.livecheck.discord.serverconfig.repo.BlacklistedChannelRepo;
 
 @Service

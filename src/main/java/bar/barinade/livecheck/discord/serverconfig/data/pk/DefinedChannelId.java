@@ -1,4 +1,4 @@
-package bar.barinade.livecheck.discord.serverconfig.data;
+package bar.barinade.livecheck.discord.serverconfig.data.pk;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,30 +9,32 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-@Embeddable
-public class WhitelistedCategoryId implements Serializable {
-	private static final long serialVersionUID = 1L;
+import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
 
-	@Column(name = "category", nullable = false)
-	private String category;
+@Embeddable
+public class DefinedChannelId implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	@Column(name = "channel", nullable = false)
+	private String channel;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "guild_id", nullable = false)
 	private ServerConfiguration guild;
 
-	public WhitelistedCategoryId() {}
+	public DefinedChannelId() {}
 	
-	public WhitelistedCategoryId(String category, ServerConfiguration guild) {
-		this.category = category;
+	public DefinedChannelId(String channel, ServerConfiguration guild) {
+		this.channel = channel;
 		this.guild = guild;
 	}
 
-	public String getCategory() {
-		return category;
+	public String getChannel() {
+		return channel;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
 
 	public ServerConfiguration getGuild() {
@@ -45,7 +47,7 @@ public class WhitelistedCategoryId implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(category, guild);
+		return Objects.hash(channel, guild);
 	}
 
 	@Override
@@ -56,8 +58,8 @@ public class WhitelistedCategoryId implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		WhitelistedCategoryId other = (WhitelistedCategoryId) obj;
-		return Objects.equals(category, other.category) && Objects.equals(guild, other.guild);
+		DefinedChannelId other = (DefinedChannelId) obj;
+		return Objects.equals(channel, other.channel) && Objects.equals(guild, other.guild);
 	}
 	
 }

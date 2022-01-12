@@ -1,4 +1,4 @@
-package bar.barinade.livecheck.discord.serverconfig.data;
+package bar.barinade.livecheck.discord.serverconfig.data.pk;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,30 +9,32 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
+
 @Embeddable
-public class BlacklistedCategoryId implements Serializable {
+public class BlacklistedChannelId implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "category", nullable = false)
-	private String category;
+	@Column(name = "channel", nullable = false)
+	private String channel;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "guild_id", nullable = false)
 	private ServerConfiguration guild;
-	
-	public BlacklistedCategoryId() {}
 
-	public BlacklistedCategoryId(String category, ServerConfiguration guild) {
-		this.category = category;
+	public BlacklistedChannelId() {}
+	
+	public BlacklistedChannelId(String channel, ServerConfiguration guild) {
+		this.channel = channel;
 		this.guild = guild;
 	}
 
-	public String getCategory() {
-		return category;
+	public String getChannel() {
+		return channel;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
 
 	public ServerConfiguration getGuild() {
@@ -45,7 +47,7 @@ public class BlacklistedCategoryId implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(category, guild);
+		return Objects.hash(channel, guild);
 	}
 
 	@Override
@@ -56,8 +58,7 @@ public class BlacklistedCategoryId implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BlacklistedCategoryId other = (BlacklistedCategoryId) obj;
-		return Objects.equals(category, other.category) && Objects.equals(guild, other.guild);
+		BlacklistedChannelId other = (BlacklistedChannelId) obj;
+		return Objects.equals(channel, other.channel) && Objects.equals(guild, other.guild);
 	}
-	
 }

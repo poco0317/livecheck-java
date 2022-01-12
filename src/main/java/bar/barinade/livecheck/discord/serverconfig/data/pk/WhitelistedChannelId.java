@@ -1,4 +1,4 @@
-package bar.barinade.livecheck.discord.serverconfig.data;
+package bar.barinade.livecheck.discord.serverconfig.data.pk;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,20 +9,22 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
+
 @Embeddable
-public class DefinedChannelId implements Serializable {
+public class WhitelistedChannelId implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Column(name = "channel", nullable = false)
 	private String channel;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "guild_id", nullable = false)
 	private ServerConfiguration guild;
-
-	public DefinedChannelId() {}
 	
-	public DefinedChannelId(String channel, ServerConfiguration guild) {
+	public WhitelistedChannelId() {}
+
+	public WhitelistedChannelId(String channel, ServerConfiguration guild) {
 		this.channel = channel;
 		this.guild = guild;
 	}
@@ -56,8 +58,7 @@ public class DefinedChannelId implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		DefinedChannelId other = (DefinedChannelId) obj;
+		WhitelistedChannelId other = (WhitelistedChannelId) obj;
 		return Objects.equals(channel, other.channel) && Objects.equals(guild, other.guild);
 	}
-	
 }

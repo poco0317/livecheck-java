@@ -5,6 +5,8 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import bar.barinade.livecheck.discord.serverconfig.data.pk.BlacklistedCategoryId;
+
 
 /**
  * If a streamer happens to be in this category, their stream will not show up.

@@ -4,6 +4,8 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import bar.barinade.livecheck.discord.serverconfig.data.pk.DefinedChannelId;
+
 /**
  * The defined list of streamers or channels to watch from any platform.
  *

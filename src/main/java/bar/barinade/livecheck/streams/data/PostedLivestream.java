@@ -4,6 +4,8 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import bar.barinade.livecheck.streams.data.pk.PostedLivestreamId;
+
 @Entity
 @Table(name = "posted_livestreams")
 public class PostedLivestream {

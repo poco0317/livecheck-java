@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
 import bar.barinade.livecheck.discord.serverconfig.data.WhitelistedCategory;
-import bar.barinade.livecheck.discord.serverconfig.data.WhitelistedCategoryId;
+import bar.barinade.livecheck.discord.serverconfig.data.pk.WhitelistedCategoryId;
 import bar.barinade.livecheck.discord.serverconfig.repo.WhitelistedCategoryRepo;
 
 @Service

@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bar.barinade.livecheck.discord.serverconfig.data.DefinedCategory;
-import bar.barinade.livecheck.discord.serverconfig.data.DefinedCategoryId;
 import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
+import bar.barinade.livecheck.discord.serverconfig.data.pk.DefinedCategoryId;
 import bar.barinade.livecheck.discord.serverconfig.repo.DefinedCategoryRepo;
 
 @Service

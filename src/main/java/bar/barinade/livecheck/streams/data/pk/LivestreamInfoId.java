@@ -1,4 +1,4 @@
-package bar.barinade.livecheck.streams.data;
+package bar.barinade.livecheck.streams.data.pk;
 
 import java.io.Serializable;
 import java.util.Objects;

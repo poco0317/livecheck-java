@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bar.barinade.livecheck.discord.serverconfig.data.DefinedChannel;
-import bar.barinade.livecheck.discord.serverconfig.data.DefinedChannelId;
 import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
+import bar.barinade.livecheck.discord.serverconfig.data.pk.DefinedChannelId;
 import bar.barinade.livecheck.discord.serverconfig.repo.DefinedChannelRepo;
 
 @Service

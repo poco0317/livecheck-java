@@ -1,4 +1,4 @@
-package bar.barinade.livecheck.streams.data;
+package bar.barinade.livecheck.streams.data.pk;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
+import bar.barinade.livecheck.streams.data.LivestreamInfo;
 
 @Embeddable
 public class PostedLivestreamId implements Serializable {

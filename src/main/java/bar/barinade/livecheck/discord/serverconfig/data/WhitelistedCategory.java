@@ -4,6 +4,8 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import bar.barinade.livecheck.discord.serverconfig.data.pk.WhitelistedCategoryId;
+
 /**
  * If any whitelisted category is present, all streamers resolved must be using any of the whitelisted categories.
  *

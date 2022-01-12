@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import bar.barinade.livecheck.discord.serverconfig.data.DefinedChannel;
-import bar.barinade.livecheck.discord.serverconfig.data.DefinedChannelId;
+import bar.barinade.livecheck.discord.serverconfig.data.pk.DefinedChannelId;
 
 @Repository
 public interface DefinedChannelRepo extends JpaRepository<DefinedChannel, DefinedChannelId> {

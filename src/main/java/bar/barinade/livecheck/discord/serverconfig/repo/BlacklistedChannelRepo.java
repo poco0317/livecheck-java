@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import bar.barinade.livecheck.discord.serverconfig.data.BlacklistedChannel;
-import bar.barinade.livecheck.discord.serverconfig.data.BlacklistedChannelId;
+import bar.barinade.livecheck.discord.serverconfig.data.pk.BlacklistedChannelId;
 
 @Repository
 public interface BlacklistedChannelRepo extends JpaRepository<BlacklistedChannel, BlacklistedChannelId> {

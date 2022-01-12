@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bar.barinade.livecheck.discord.serverconfig.data.WhitelistedChannel;
-import bar.barinade.livecheck.discord.serverconfig.data.WhitelistedChannelId;
+import bar.barinade.livecheck.discord.serverconfig.data.pk.WhitelistedChannelId;
 import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
 import bar.barinade.livecheck.discord.serverconfig.repo.WhitelistedChannelRepo;
 
