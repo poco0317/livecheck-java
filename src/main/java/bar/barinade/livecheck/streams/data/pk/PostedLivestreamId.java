@@ -9,7 +9,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 import bar.barinade.livecheck.discord.serverconfig.data.ServerConfiguration;
 import bar.barinade.livecheck.streams.data.LivestreamInfo;
@@ -25,7 +24,7 @@ public class PostedLivestreamId implements Serializable {
 	@Column(name = "message_id", nullable = false)
 	private Long messageId;
 	
-	@OneToOne
+	@ManyToOne
 	@JoinColumns({
 		@JoinColumn(name = "platform", nullable = false),
 		@JoinColumn(name = "name", nullable = false)

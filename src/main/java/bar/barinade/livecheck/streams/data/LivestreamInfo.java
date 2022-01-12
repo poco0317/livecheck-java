@@ -1,9 +1,12 @@
 package bar.barinade.livecheck.streams.data;
 
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import bar.barinade.livecheck.streams.data.pk.LivestreamInfoId;
@@ -29,6 +32,9 @@ public class LivestreamInfo {
 	
 	@Column(name = "description", nullable = false)
 	private String description;
+	
+	@OneToMany(mappedBy = "id.info")
+	private Set<PostedLivestream> posts;
 
 	public LivestreamInfoId getId() {
 		return id;
@@ -76,6 +82,14 @@ public class LivestreamInfo {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Set<PostedLivestream> getPostedLivestreams() {
+		return posts;
+	}
+
+	public void setPostedLivestreams(Set<PostedLivestream> postedLivestreams) {
+		this.posts = postedLivestreams;
 	}
 
 }
