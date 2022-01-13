@@ -35,6 +35,10 @@ public class BotManager {
 	@Autowired
 	private ApplicationContext springContext;
 	
+	public JDA getJDA() {
+		return jdaBot;
+	}
+	
 	@PostConstruct
 	private void initialize() throws LoginException, InterruptedException {
 		m_logger.info("Initializing BotManager");

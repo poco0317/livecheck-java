@@ -2,7 +2,9 @@ package bar.barinade.livecheck.streams;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +16,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import bar.barinade.livecheck.discord.BotManager;
+import bar.barinade.livecheck.discord.serverconfig.service.BlacklistedCategoryService;
+import bar.barinade.livecheck.discord.serverconfig.service.BlacklistedChannelService;
+import bar.barinade.livecheck.discord.serverconfig.service.DefinedCategoryService;
+import bar.barinade.livecheck.discord.serverconfig.service.DefinedChannelService;
 import bar.barinade.livecheck.discord.serverconfig.service.ServerConfigService;
+import bar.barinade.livecheck.discord.serverconfig.service.WhitelistedCategoryService;
+import bar.barinade.livecheck.discord.serverconfig.service.WhitelistedChannelService;
 import bar.barinade.livecheck.streams.data.LivestreamInfo;
 import bar.barinade.livecheck.streams.data.repo.LivestreamInfoRepo;
 import bar.barinade.livecheck.streams.data.repo.PostedLivestreamRepo;
@@ -35,10 +44,24 @@ public class LivestreamManager {
 	
 	@Autowired
 	private ServerConfigService configService;
+	@Autowired
+	private BlacklistedCategoryService blCategoryService;
+	@Autowired
+	private BlacklistedChannelService blChannelService;
+	@Autowired
+	private WhitelistedCategoryService wlCategoryService;
+	@Autowired
+	private WhitelistedChannelService wlChannelService;
+	@Autowired
+	private DefinedCategoryService categoryService;
+	@Autowired
+	private DefinedChannelService channelService;
+	
+	@Autowired
+	private BotManager botManager;
 	
 	@Autowired
 	private LivestreamInfoRepo streamRepo;
-	
 	@Autowired
 	private PostedLivestreamRepo postRepo;
 	
@@ -74,14 +97,27 @@ public class LivestreamManager {
 			streamersByPlatform.get(platform).put(stream.getId().getName(), stream);
 		}
 		
+		// collect all running guild ids (if kicked from a server there's no chance of fixing the messages)
+		List<Long> guildIds = new ArrayList<>();
+		botManager.getJDA().getGuilds().forEach(guild -> guildIds.add(guild.getIdLong()));
+		
+		// all configured categories/games and streamers 
+		Set<String> allCategories = new HashSet<>();
+		Set<String> allChannels = new HashSet<>();
+		for (final Long id : guildIds) {
+			channelService.getAll(id).forEach(channel -> allChannels.add(channel.getId().getChannel()));
+			categoryService.getAll(id).forEach(category -> allCategories.add(category.getId().getCategory()));
+		}
+		List<String> allCategoriesList = new ArrayList<>(allCategories);
+		List<String> allChannelsList = new ArrayList<>(allChannels);
+		
+		// all currently live found streams
 		List<LivestreamInfo> currentlyLiveStreams = new ArrayList<>();
 		for (LivestreamImpl impl : streamApis.values()) {
-			List<String> categories = new ArrayList<>();
-			categories.add("Etterna");
-			List<String> channels = new ArrayList<>();
-			channels.add("orobou");
-			currentlyLiveStreams.addAll(impl.getLivestreams(categories, channels));
+			currentlyLiveStreams.addAll(impl.getLivestreams(allCategoriesList, allChannelsList));
 		}
+		
+		m_logger.info(currentlyLiveStreams.toString());
 		
 		m_logger.info("Finished global livestream update");
 	}

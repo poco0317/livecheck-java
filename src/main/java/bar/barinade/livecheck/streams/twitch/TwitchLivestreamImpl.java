@@ -139,7 +139,6 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 			while (idChunk.size() > 0 && startIndex < categoryNames.size()) {
 				GameList result = api.getGames(null, null, idChunk).execute();
 				output.addAll(result.getGames());
-				m_logger.info(result.getGames().toString());
 				
 				// add to cache
 				for (Game game : result.getGames()) {
@@ -162,15 +161,14 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 	 * Search once for users and once again for games (chunking by 100s and paginating by 100s of results...)
 	 */
 	private HashSet<Stream> chunkedPaginatingStreamGetter(List<String> queryList, boolean forUsers) {
+		m_logger.trace("Beginning chunked paginating stream getter | {} entries | {} forUsers", queryList.size(), forUsers);
 		HashSet<Stream> output = new HashSet<>();
 		
 		// chunking into 100s
 		int upperBound = Math.min(100, queryList.size());
 		int lowerBound = 0;
 		List<String> chunk = queryList.size() > 0 ? queryList.subList(lowerBound, upperBound) : null;
-		
-		m_logger.trace("Split into chunks: ub {} | total size {}", upperBound, queryList.size());
-		
+				
 		// repeat until exhausted all chunks
 		while ((chunk != null && chunk.size() > 0) ||
 				(lowerBound != upperBound)) {
@@ -180,12 +178,10 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 			
 			// a result of more than 100 - we have to paginate...
 			String cursor = sl.getPagination().getCursor();
-			m_logger.trace("Got cursor {}", cursor);
 			while (cursor != null) {
 				sl = apiGetStreams(chunk, forUsers, cursor);
 				output.addAll(sl.getStreams());
 				cursor = sl.getPagination().getCursor();
-				m_logger.trace("moved cursor to {}", cursor);
 			}
 			
 			if (lowerBound == upperBound) {
@@ -195,8 +191,6 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 				upperBound = Math.min(queryList.size(), upperBound + 100);
 				chunk = queryList.subList(lowerBound, upperBound);
 			}
-			m_logger.trace("Finished iteration");
-			m_logger.trace("Moved bounds: lb {} | ub {}", lowerBound, upperBound);
 		}
 		
 		m_logger.trace("Returning {} streams", output.size());
@@ -237,9 +231,7 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 		int upperBound = Math.min(100, names.size());
 		int lowerBound = 0;
 		List<String> chunk = names.size() > 0 ? names.subList(lowerBound, upperBound) : null;
-		
-		m_logger.trace("Split into chunks: ub {} | total size {}", upperBound, names.size());
-		
+				
 		// repeat until exhausted all chunks
 		while ((chunk != null && chunk.size() > 0) ||
 				(lowerBound != upperBound)) {
@@ -258,8 +250,6 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 				upperBound = Math.min(names.size(), upperBound + 100);
 				chunk = names.subList(lowerBound, upperBound);
 			}
-			m_logger.trace("Finished iteration");
-			m_logger.trace("Moved bounds: lb {} | ub {}", lowerBound, upperBound);
 		}
 		
 		streams.forEach(stream -> {
