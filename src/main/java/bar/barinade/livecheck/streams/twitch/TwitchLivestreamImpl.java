@@ -1,6 +1,7 @@
 package bar.barinade.livecheck.streams.twitch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -15,14 +16,16 @@ import org.springframework.stereotype.Component;
 
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.TwitchHelixBuilder;
+import com.github.twitch4j.helix.domain.FollowList;
 import com.github.twitch4j.helix.domain.Game;
 import com.github.twitch4j.helix.domain.GameList;
 import com.github.twitch4j.helix.domain.Stream;
 import com.github.twitch4j.helix.domain.StreamList;
+import com.github.twitch4j.helix.domain.UserList;
 
 import bar.barinade.livecheck.streams.LivestreamImpl;
 import bar.barinade.livecheck.streams.data.LivestreamInfo;
-import feign.Logger.Level;
+import bar.barinade.livecheck.streams.data.pk.LivestreamInfoId;
 
 @Component
 public class TwitchLivestreamImpl extends LivestreamImpl {
@@ -63,7 +66,7 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 
 	@Override
 	public List<LivestreamInfo> getLivestreams(List<String> categoryNames, List<String> channelNames) {
-		m_logger.debug("Getting Twitch livestreams - {} categories | {} channels", categoryNames.size(), channelNames.size());
+		m_logger.info("Getting Twitch livestreams - {} categories | {} channels", categoryNames.size(), channelNames.size());
 		
 		// to guarantee uniqueness (but if letter case starts differing ... dont care because the site also cares about that so its just extra garbage)
 		HashSet<String> categoryNameSet = new HashSet<>(categoryNames);
@@ -84,9 +87,31 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 		// let's find out
 		liveStreams.addAll(chunkedPaginatingStreamGetter(gameIds, false));
 		liveStreams.addAll(chunkedPaginatingStreamGetter(channelNames, true));
+		m_logger.info("Found {} Twitch livestreams", liveStreams.size());
 		
-		m_logger.debug("Found {} streams in the end ...", liveStreams.size());
-		return null;
+		List<LivestreamInfo> result = new ArrayList<>(liveStreams.size());
+		for (Stream stream : liveStreams) {
+			// rather than thrashing the db just make a bunch of new things
+			// there is no way that could go wrong
+			// (we can take all these copies and the result is, basically each rerun resets the entire table of LivestreamInfos)
+			LivestreamInfo info = new LivestreamInfo();
+			LivestreamInfoId id = new LivestreamInfoId();
+			id.setName(stream.getUserLogin());
+			id.setPlatform(getPlatform());
+			info.setId(id);
+			info.setCurrentViewers(stream.getViewerCount().longValue());
+			info.setCategory(stream.getGameName());
+			info.setThumbnailUrl(stream.getThumbnailUrl());
+			info.setDescription(null);
+			info.setFollowers(null);
+			info.setStatus(null);
+			info.setTotalViews(null);
+			info.setTitle(stream.getTitle());
+			result.add(info);
+		}
+		fillMiscInfo(result);
+		
+		return result;
 	}
 	
 	/**
@@ -186,6 +211,66 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 			// chunks are Game IDs
 			return api.getStreams(null, cursor, null, 100, chunk, null, null, null).execute();
 		}
+	}
+	
+	private List<LivestreamInfo> fillMiscInfo(List<LivestreamInfo> streams) {
+		
+		List<String> names = new ArrayList<>(streams.size());
+		streams.forEach(stream -> names.add(stream.getId().getName()));
+		
+		class MiscData {
+			public MiscData(String description, Integer total, String status, Integer views) {
+				this.description = description;
+				this.followers = total;
+				this.status = status;
+				this.totalViews = views;
+			}
+			public String description;
+			public Integer followers;
+			public String status;
+			public Integer totalViews;
+		}
+		
+		HashMap<String, MiscData> datamap = new HashMap<>();
+		
+		// chunking into 100s
+		int upperBound = Math.min(100, names.size());
+		int lowerBound = 0;
+		List<String> chunk = names.size() > 0 ? names.subList(lowerBound, upperBound) : null;
+		
+		m_logger.trace("Split into chunks: ub {} | total size {}", upperBound, names.size());
+		
+		// repeat until exhausted all chunks
+		while ((chunk != null && chunk.size() > 0) ||
+				(lowerBound != upperBound)) {
+			
+			UserList ul = api.getUsers(null, null, chunk).execute();
+			ul.getUsers().forEach(user -> {
+				String id = user.getId();
+				FollowList follows = api.getFollowers(null, null, id, null, 1).execute();
+				datamap.put(user.getLogin(), new MiscData(user.getDescription(), follows.getTotal(), user.getBroadcasterType(), user.getViewCount()));
+			});
+			
+			if (lowerBound == upperBound) {
+				chunk = null;
+			} else {
+				lowerBound = upperBound;
+				upperBound = Math.min(names.size(), upperBound + 100);
+				chunk = names.subList(lowerBound, upperBound);
+			}
+			m_logger.trace("Finished iteration");
+			m_logger.trace("Moved bounds: lb {} | ub {}", lowerBound, upperBound);
+		}
+		
+		streams.forEach(stream -> {
+			MiscData data = datamap.get(stream.getId().getName());
+			stream.setDescription(data.description);
+			stream.setFollowers(data.followers.longValue());
+			stream.setTotalViews(data.totalViews.longValue());
+			stream.setStatus(data.status);
+		});
+		
+		return streams;
 	}
 	
 }

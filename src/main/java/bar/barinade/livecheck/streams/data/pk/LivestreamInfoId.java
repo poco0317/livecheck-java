@@ -29,6 +29,11 @@ public class LivestreamInfoId implements Serializable {
 		this.name = name;
 	}
 
+	@Override
+	public String toString() {
+		return "LivestreamInfoId [platform=" + platform + ", name=" + name + "]";
+	}
+
 	public LivestreamImpl.Platform getPlatform() {
 		return platform;
 	}

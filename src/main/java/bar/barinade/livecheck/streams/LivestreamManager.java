@@ -74,12 +74,13 @@ public class LivestreamManager {
 			streamersByPlatform.get(platform).put(stream.getId().getName(), stream);
 		}
 		
+		List<LivestreamInfo> currentlyLiveStreams = new ArrayList<>();
 		for (LivestreamImpl impl : streamApis.values()) {
 			List<String> categories = new ArrayList<>();
 			categories.add("Etterna");
 			List<String> channels = new ArrayList<>();
 			channels.add("orobou");
-			impl.getLivestreams(categories, channels);
+			currentlyLiveStreams.addAll(impl.getLivestreams(categories, channels));
 		}
 		
 		m_logger.info("Finished global livestream update");

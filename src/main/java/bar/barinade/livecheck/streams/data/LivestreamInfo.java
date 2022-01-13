@@ -18,23 +18,39 @@ public class LivestreamInfo {
 	@EmbeddedId
 	private LivestreamInfoId id;
 	
-	@Column(name = "followers", nullable = false)
+	@Column(name = "followers", nullable = true)
 	private Long followers;
 	
-	@Column(name = "views", nullable = false)
+	@Column(name = "views", nullable = true)
 	private Long totalViews;
 	
-	@Column(name = "viewers", nullable = false)
+	@Column(name = "viewers", nullable = true)
 	private Long currentViewers;
 	
-	@Column(name = "status", nullable = false)
+	@Column(name = "status", nullable = true)
 	private String status;
 	
-	@Column(name = "description", nullable = false)
+	@Column(name = "title", nullable = true)
+	private String title;
+	
+	@Column(name = "description", nullable = true)
 	private String description;
+	
+	@Column(name = "category", nullable = true)
+	private String category;
+	
+	@Column(name = "thumbnail_url", nullable = true)
+	private String thumbnailUrl;
 	
 	@OneToMany(mappedBy = "id.info")
 	private Set<PostedLivestream> posts;
+
+	@Override
+	public String toString() {
+		return "LivestreamInfo [id=" + id + ", followers=" + followers + ", totalViews=" + totalViews
+				+ ", currentViewers=" + currentViewers + ", status=" + status + ", title=" + title + ", description="
+				+ description + ", category=" + category + ", thumbnailUrl=" + thumbnailUrl + ", posts=" + posts + "]";
+	}
 
 	public LivestreamInfoId getId() {
 		return id;
@@ -84,12 +100,36 @@ public class LivestreamInfo {
 		this.description = description;
 	}
 
-	public Set<PostedLivestream> getPostedLivestreams() {
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public Set<PostedLivestream> getPosts() {
 		return posts;
 	}
 
-	public void setPostedLivestreams(Set<PostedLivestream> postedLivestreams) {
-		this.posts = postedLivestreams;
+	public void setPosts(Set<PostedLivestream> posts) {
+		this.posts = posts;
+	}
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
 	}
 
 }
