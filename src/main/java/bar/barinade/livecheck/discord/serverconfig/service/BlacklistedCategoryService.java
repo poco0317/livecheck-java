@@ -39,10 +39,10 @@ public class BlacklistedCategoryService {
 			categoryWatch = new BlacklistedCategory();
 			categoryWatch.setId(new BlacklistedCategoryId(category, configService.getConfig(guildId)));
 			categoryRepo.save(categoryWatch);
-			m_logger.info("Guild {} added blacklist category {}", guildId, category);
+			m_logger.debug("Guild {} added blacklist category {}", guildId, category);
 			return true;
 		} else {
-			m_logger.info("Guild {} attempted to add duplicate blacklist category {}", guildId, category);
+			m_logger.debug("Guild {} attempted to add duplicate blacklist category {}", guildId, category);
 			return false;
 		}
 	}
@@ -51,11 +51,11 @@ public class BlacklistedCategoryService {
 	public boolean remove(Long guildId, String category) {
 		BlacklistedCategory categoryWatch = get(guildId, category);
 		if (categoryWatch == null) {
-			m_logger.info("Guild {} attempted to delete blacklist category {} (did not exist)", guildId, category);
+			m_logger.debug("Guild {} attempted to delete blacklist category {} (did not exist)", guildId, category);
 			return false;
 		} else {
 			categoryRepo.delete(categoryWatch);
-			m_logger.info("Guild {} deleted blacklist category {} successfully)", guildId, category);
+			m_logger.debug("Guild {} deleted blacklist category {} successfully)", guildId, category);
 			return true;
 		}
 	}
@@ -63,14 +63,14 @@ public class BlacklistedCategoryService {
 	@Transactional
 	public Long delAll(Long guildId) {
 		Long deleted = categoryRepo.deleteByIdGuildId(guildId);
-		m_logger.info("Guild {} deleted all categories from blacklist (count {})", guildId, deleted);
+		m_logger.debug("Guild {} deleted all categories from blacklist (count {})", guildId, deleted);
 		return deleted;
 	}
 	
 	@Transactional
 	public List<BlacklistedCategory> getAll(Long guildId) {
 		List<BlacklistedCategory> list = categoryRepo.findByIdGuildId(guildId);
-		m_logger.info("Guild {} displayed all categories in blacklist (count {})", guildId, list.size());
+		m_logger.trace("Guild {} displayed all categories in blacklist (count {})", guildId, list.size());
 		return list;
 	}
 }

@@ -39,10 +39,10 @@ public class DefinedCategoryService {
 			categoryWatch = new DefinedCategory();
 			categoryWatch.setId(new DefinedCategoryId(category, configService.getConfig(guildId)));
 			categoryRepo.save(categoryWatch);
-			m_logger.info("Guild {} added watchlist category {}", guildId, category);
+			m_logger.debug("Guild {} added watchlist category {}", guildId, category);
 			return true;
 		} else {
-			m_logger.info("Guild {} attempted to add duplicate watchlist category {}", guildId, category);
+			m_logger.debug("Guild {} attempted to add duplicate watchlist category {}", guildId, category);
 			return false;
 		}
 	}
@@ -51,11 +51,11 @@ public class DefinedCategoryService {
 	public boolean remove(Long guildId, String category) {
 		DefinedCategory categoryWatch = get(guildId, category);
 		if (categoryWatch == null) {
-			m_logger.info("Guild {} attempted to delete watchlist category {} (did not exist)", guildId, category);
+			m_logger.debug("Guild {} attempted to delete watchlist category {} (did not exist)", guildId, category);
 			return false;
 		} else {
 			categoryRepo.delete(categoryWatch);
-			m_logger.info("Guild {} deleted watchlist category {} successfully)", guildId, category);
+			m_logger.debug("Guild {} deleted watchlist category {} successfully)", guildId, category);
 			return true;
 		}
 	}
@@ -63,14 +63,14 @@ public class DefinedCategoryService {
 	@Transactional
 	public Long delAll(Long guildId) {
 		Long deleted = categoryRepo.deleteByIdGuildId(guildId);
-		m_logger.info("Guild {} deleted all categories from watch list (count {})", guildId, deleted);
+		m_logger.debug("Guild {} deleted all categories from watch list (count {})", guildId, deleted);
 		return deleted;
 	}
 	
 	@Transactional
 	public List<DefinedCategory> getAll(Long guildId) {
 		List<DefinedCategory> list = categoryRepo.findByIdGuildId(guildId);
-		m_logger.info("Guild {} displayed all categories in watch list (count {})", guildId, list.size());
+		m_logger.trace("Guild {} displayed all categories in watch list (count {})", guildId, list.size());
 		return list;
 	}
 }

@@ -33,7 +33,7 @@ public class ServerConfigService {
 		ServerConfiguration config = getConfig(guildId);
 		config.setTitleRegex(regex);
 		configRepo.saveAndFlush(config);
-		m_logger.info("Guild {} set title regex to {}", guildId, regex);
+		m_logger.debug("Guild {} set title regex to {}", guildId, regex);
 	}
 	
 	@Transactional
@@ -46,7 +46,7 @@ public class ServerConfigService {
 		ServerConfiguration config = getConfig(guildId);
 		config.setChannelId(channelId);
 		configRepo.saveAndFlush(config);
-		m_logger.info("Guild {} set output channel to {}", guildId, channelId);
+		m_logger.debug("Guild {} set output channel to {}", guildId, channelId);
 	}
 	
 	@Transactional
@@ -59,7 +59,7 @@ public class ServerConfigService {
 		ServerConfiguration config = getConfig(guildId);
 		config.setMentionRoleId(roleId);
 		configRepo.saveAndFlush(config);
-		m_logger.info("Guild {} set live-mention role to {}", guildId, roleId);
+		m_logger.debug("Guild {} set live-mention role to {}", guildId, roleId);
 	}
 	
 	@Transactional

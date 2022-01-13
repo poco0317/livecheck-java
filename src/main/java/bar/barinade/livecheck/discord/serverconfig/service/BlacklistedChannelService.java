@@ -39,10 +39,10 @@ public class BlacklistedChannelService {
 			channelWatch = new BlacklistedChannel();
 			channelWatch.setId(new BlacklistedChannelId(channel, configService.getConfig(guildId)));
 			channelRepo.save(channelWatch);
-			m_logger.info("Guild {} added blacklist channel {}", guildId, channel);
+			m_logger.debug("Guild {} added blacklist channel {}", guildId, channel);
 			return true;
 		} else {
-			m_logger.info("Guild {} attempted to add duplicate blacklist channel {}", guildId, channel);
+			m_logger.debug("Guild {} attempted to add duplicate blacklist channel {}", guildId, channel);
 			return false;
 		}
 	}
@@ -51,11 +51,11 @@ public class BlacklistedChannelService {
 	public boolean remove(Long guildId, String channel) {
 		BlacklistedChannel channelWatch = get(guildId, channel);
 		if (channelWatch == null) {
-			m_logger.info("Guild {} attempted to delete blacklist channel {} (did not exist)", guildId, channel);
+			m_logger.debug("Guild {} attempted to delete blacklist channel {} (did not exist)", guildId, channel);
 			return false;
 		} else {
 			channelRepo.delete(channelWatch);
-			m_logger.info("Guild {} deleted blacklist channel {} successfully)", guildId, channel);
+			m_logger.debug("Guild {} deleted blacklist channel {} successfully)", guildId, channel);
 			return true;
 		}
 	}
@@ -63,14 +63,14 @@ public class BlacklistedChannelService {
 	@Transactional
 	public Long delAll(Long guildId) {
 		Long deleted = channelRepo.deleteByIdGuildId(guildId);
-		m_logger.info("Guild {} deleted all categories from blacklist (count {})", guildId, deleted);
+		m_logger.debug("Guild {} deleted all categories from blacklist (count {})", guildId, deleted);
 		return deleted;
 	}
 	
 	@Transactional
 	public List<BlacklistedChannel> getAll(Long guildId) {
 		List<BlacklistedChannel> list = channelRepo.findByIdGuildId(guildId);
-		m_logger.info("Guild {} displayed all categories in blacklist (count {})", guildId, list.size());
+		m_logger.trace("Guild {} displayed all categories in blacklist (count {})", guildId, list.size());
 		return list;
 	}
 }
