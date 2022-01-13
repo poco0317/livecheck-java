@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import bar.barinade.livecheck.discord.handler.BasicCommandHandler;
 import bar.barinade.livecheck.discord.handler.CommandHandlerBase;
 import bar.barinade.livecheck.discord.handler.ServerConfigCommandHandler;
 import net.dv8tion.jda.api.JDA;

@@ -1,14 +1,13 @@
 package bar.barinade.livecheck.streams;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+
+import bar.barinade.livecheck.streams.data.LivestreamInfo;
 
 public abstract class LivestreamImpl {
-	
-	private static final Logger m_logger = LoggerFactory.getLogger(LivestreamImpl.class);
-	
+		
 	/**
-	 * This Type is used as the Platform for LivestreamInfo which means existing platforms should not be renamed.
+	 * This enum is used as the Platform for LivestreamInfo which means existing platforms should not be renamed.
 	 * If any are renamed, their data becomes invalidated.
 	 */
 	public enum Platform {
@@ -16,4 +15,7 @@ public abstract class LivestreamImpl {
 	}
 	
 	public abstract Platform getPlatform();
+	
+	public abstract List<LivestreamInfo> getLivestreams(List<String> categoryNames, List<String> channelNames);
+
 }
