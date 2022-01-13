@@ -23,7 +23,7 @@ public class LivestreamManager {
 	
 	private static final Logger m_logger = LoggerFactory.getLogger(LivestreamManager.class);
 	
-	private ConcurrentHashMap<LivestreamImpl.Type, LivestreamImpl> streamApis = new ConcurrentHashMap<>(); 
+	private ConcurrentHashMap<LivestreamImpl.Platform, LivestreamImpl> streamApis = new ConcurrentHashMap<>(); 
 
 	@Autowired
 	private ApplicationContext springContext;
@@ -42,7 +42,7 @@ public class LivestreamManager {
 		m_logger.info("Initializing LivestreamManager");
 		
 		streamApis.clear();
-		streamApis.put(LivestreamImpl.Type.TWITCH, springContext.getBean(TwitchLivestreamImpl.class));
+		streamApis.put(LivestreamImpl.Platform.TWITCH, springContext.getBean(TwitchLivestreamImpl.class));
 		
 		m_logger.info("LivestreamManager initialize finished");
 	}
@@ -58,9 +58,9 @@ public class LivestreamManager {
 		
 		// all streamers mapped out by platform
 		// this mapping is adjusted based on the streamers that went live or offline, to derive the livestreams to post
-		HashMap<LivestreamImpl.Type, HashMap<String, LivestreamInfo>> streamersByPlatform = new HashMap<>();
+		HashMap<LivestreamImpl.Platform, HashMap<String, LivestreamInfo>> streamersByPlatform = new HashMap<>();
 		for (LivestreamInfo stream : allStreamsBefore) {
-			final LivestreamImpl.Type platform = stream.getId().getPlatform();
+			final LivestreamImpl.Platform platform = stream.getId().getPlatform();
 			if (!streamersByPlatform.containsKey(platform)) {
 				streamersByPlatform.put(platform, new HashMap<>());
 			}

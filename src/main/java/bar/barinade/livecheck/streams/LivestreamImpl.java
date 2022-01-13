@@ -11,12 +11,9 @@ public abstract class LivestreamImpl {
 	 * This Type is used as the Platform for LivestreamInfo which means existing platforms should not be renamed.
 	 * If any are renamed, their data becomes invalidated.
 	 */
-	public enum Type {
-		
+	public enum Platform {
 		TWITCH;
-		
 	}
 	
-	
-
+	public abstract Platform getPlatform();
 }

@@ -9,7 +9,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import bar.barinade.livecheck.streams.LivestreamImpl;
-import bar.barinade.livecheck.streams.LivestreamImpl.Type;
+import bar.barinade.livecheck.streams.LivestreamImpl.Platform;
 
 @Embeddable
 public class LivestreamInfoId implements Serializable {
@@ -17,23 +17,23 @@ public class LivestreamInfoId implements Serializable {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "platform", nullable = false)
-	private LivestreamImpl.Type platform;
+	private LivestreamImpl.Platform platform;
 	
 	@Column(name = "name", nullable = false)
 	private String name;
 
 	public LivestreamInfoId() {}
 	
-	public LivestreamInfoId(Type platform, String name) {
+	public LivestreamInfoId(Platform platform, String name) {
 		this.platform = platform;
 		this.name = name;
 	}
 
-	public LivestreamImpl.Type getPlatform() {
+	public LivestreamImpl.Platform getPlatform() {
 		return platform;
 	}
 
-	public void setPlatform(LivestreamImpl.Type platform) {
+	public void setPlatform(LivestreamImpl.Platform platform) {
 		this.platform = platform;
 	}
 
