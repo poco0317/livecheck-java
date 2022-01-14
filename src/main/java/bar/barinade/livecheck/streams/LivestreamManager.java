@@ -337,7 +337,7 @@ public class LivestreamManager {
 		String followers = newInfo.getFollowers() != null ? String.format("%d", newInfo.getFollowers()) : "unknown";
 		String totViews = newInfo.getTotalViews() != null ? String.format("%d", newInfo.getTotalViews()) : "unknown";
 		String curViews = newInfo.getCurrentViewers() != null ? String.format("%d", newInfo.getCurrentViewers()) : "unknown";
-		String status = newInfo.getStatus() != null ? StringUtils.capitalize(newInfo.getStatus()) : "Non-Affiliate";
+		String status = newInfo.getStatus() != null && !newInfo.getStatus().isEmpty() ? StringUtils.capitalize(newInfo.getStatus()) : "Non-Affiliate";
 		String streamTitle = newInfo.getTitle() != null ? String.format("\"%s\"", newInfo.getTitle()) : "(blank title)";
 		String description = newInfo.getDescription() != null ? newInfo.getDescription() : "No description";
 		
