@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -81,6 +82,9 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private DefinedCategoryService categoryService;
 	@Autowired
 	private DefinedChannelService channelService;
+	
+	@Value("${discord.ownerid}")
+	private String ownerId;
 	
 	@Override
 	public CommandData[] getCommandsToUpsert() {
@@ -171,7 +175,10 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		final String cmd = event.getName();
 		
 		Member mmbr = event.getMember();
-		if (!mmbr.hasPermission(Permission.ADMINISTRATOR) && !mmbr.hasPermission(Permission.MANAGE_SERVER)) {
+		if (!mmbr.getId().equals(ownerId)
+				&& !mmbr.isOwner()
+				&& !mmbr.hasPermission(Permission.ADMINISTRATOR)
+				&& !mmbr.hasPermission(Permission.MANAGE_SERVER)) {
 			m_logger.info("{} attempted to use config command without having permission", mmbr.getId());
 			event.getHook().editOriginal("You must have Manage Server or Administrator permissions to use this command.").queue();;
 			return;
@@ -457,7 +464,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				Long count = wlCategoryService.delAll(id);
 				event.getHook().editOriginal("Removed all categories ("+count+") from the whitelist.").queue();
 			} else if (method.equals(SUBCMD_REMOVE)) {
-				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				final String channel = event.getOption(OPTION_CATEGORY).getAsString();
 				boolean success = wlCategoryService.remove(id, channel);
 				if (success) {
 					event.getHook().editOriginal("Removed category '"+channel+"' from the whitelist.").queue();
@@ -479,7 +486,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 					event.getHook().editOriginal(result).queue();
 				}
 			} else if (method.equals(SUBCMD_ADD)) {
-				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				final String channel = event.getOption(OPTION_CATEGORY).getAsString();
 				boolean success = wlCategoryService.add(id, channel);
 				if (success) {
 					event.getHook().editOriginal("Added category '"+channel+"' to the whitelist.").queue();
@@ -547,7 +554,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 				Long count = blCategoryService.delAll(id);
 				event.getHook().editOriginal("Removed all categories ("+count+") from the blacklist.").queue();
 			} else if (method.equals(SUBCMD_REMOVE)) {
-				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				final String channel = event.getOption(OPTION_CATEGORY).getAsString();
 				boolean success = blCategoryService.remove(id, channel);
 				if (success) {
 					event.getHook().editOriginal("Removed category '"+channel+"' from the blacklist.").queue();
@@ -569,7 +576,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 					event.getHook().editOriginal(result).queue();
 				}
 			} else if (method.equals(SUBCMD_ADD)) {
-				final String channel = event.getOption(OPTION_STREAMER).getAsString();
+				final String channel = event.getOption(OPTION_CATEGORY).getAsString();
 				boolean success = blCategoryService.add(id, channel);
 				if (success) {
 					event.getHook().editOriginal("Added category '"+channel+"' to the blacklist.").queue();
