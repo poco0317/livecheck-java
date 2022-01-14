@@ -11,10 +11,21 @@ public abstract class LivestreamImpl {
 	 * If any are renamed, their data becomes invalidated.
 	 */
 	public enum Platform {
-		TWITCH;
+		TWITCH ("Twitch");
+		
+		private String stylizedName;
+		
+		Platform(String stylizedName) {
+			this.stylizedName = stylizedName;
+		}
+		public String stylizedName() {
+			return stylizedName;
+		}
 	}
 	
 	public abstract Platform getPlatform();
+	
+	public abstract String getStreamUrl(LivestreamInfo info);
 	
 	public abstract List<LivestreamInfo> getLivestreams(List<String> categoryNames, List<String> channelNames);
 

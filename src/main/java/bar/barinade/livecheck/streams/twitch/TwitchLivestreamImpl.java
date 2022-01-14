@@ -63,6 +63,11 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 	public Platform getPlatform() {
 		return Platform.TWITCH;
 	}
+	
+	@Override
+	public String getStreamUrl(LivestreamInfo info) {
+		return "https://twitch.tv/"+info.getId().getName().toLowerCase();
+	}
 
 	@Override
 	public List<LivestreamInfo> getLivestreams(List<String> categoryNames, List<String> channelNames) {
@@ -100,13 +105,14 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 			id.setPlatform(getPlatform());
 			info.setId(id);
 			info.setCurrentViewers(stream.getViewerCount().longValue());
-			info.setCategory(stream.getGameName());
-			info.setThumbnailUrl(stream.getThumbnailUrl());
+			info.setCategory(stream.getGameName() != null ? stream.getGameName() : "Unknown");
+			info.setThumbnailUrl(stream.getThumbnailUrl(256, 144));
 			info.setDescription(null);
 			info.setFollowers(null);
 			info.setStatus(null);
 			info.setTotalViews(null);
 			info.setTitle(stream.getTitle());
+			info.setAvatarUrl(null);
 			result.add(info);
 		}
 		fillMiscInfo(result);
@@ -213,16 +219,18 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 		streams.forEach(stream -> names.add(stream.getId().getName()));
 		
 		class MiscData {
-			public MiscData(String description, Integer total, String status, Integer views) {
+			public MiscData(String description, Integer total, String status, Integer views, String profileImageUrl) {
 				this.description = description;
 				this.followers = total;
 				this.status = status;
 				this.totalViews = views;
+				this.profileImageUrl = profileImageUrl;
 			}
 			public String description;
 			public Integer followers;
 			public String status;
 			public Integer totalViews;
+			public String profileImageUrl;
 		}
 		
 		HashMap<String, MiscData> datamap = new HashMap<>();
@@ -240,7 +248,16 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 			ul.getUsers().forEach(user -> {
 				String id = user.getId();
 				FollowList follows = api.getFollowers(null, null, id, null, 1).execute();
-				datamap.put(user.getLogin(), new MiscData(user.getDescription(), follows.getTotal(), user.getBroadcasterType(), user.getViewCount()));
+				datamap.put(
+						user.getLogin(),
+						new MiscData(
+							user.getDescription(),
+							follows.getTotal(),
+							user.getBroadcasterType(),
+							user.getViewCount(),
+							user.getProfileImageUrl()
+							)
+						);
 			});
 			
 			if (lowerBound == upperBound) {
@@ -252,12 +269,14 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 			}
 		}
 		
+		// fill the data
 		streams.forEach(stream -> {
 			MiscData data = datamap.get(stream.getId().getName());
 			stream.setDescription(data.description);
 			stream.setFollowers(data.followers.longValue());
 			stream.setTotalViews(data.totalViews.longValue());
 			stream.setStatus(data.status);
+			stream.setAvatarUrl(data.profileImageUrl);
 		});
 		
 		return streams;

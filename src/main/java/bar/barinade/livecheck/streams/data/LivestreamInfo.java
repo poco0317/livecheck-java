@@ -42,6 +42,9 @@ public class LivestreamInfo {
 	@Column(name = "thumbnail_url", nullable = true)
 	private String thumbnailUrl;
 	
+	@Column(name = "avatar_url", nullable = true)
+	private String avatarUrl;
+	
 	@OneToMany(mappedBy = "id.info")
 	private Set<PostedLivestream> posts;
 
@@ -49,7 +52,8 @@ public class LivestreamInfo {
 	public String toString() {
 		return "LivestreamInfo [id=" + id + ", followers=" + followers + ", totalViews=" + totalViews
 				+ ", currentViewers=" + currentViewers + ", status=" + status + ", title=" + title + ", description="
-				+ description + ", category=" + category + ", thumbnailUrl=" + thumbnailUrl + ", posts=" + posts + "]";
+				+ description + ", category=" + category + ", thumbnailUrl=" + thumbnailUrl + ", avatarUrl=" + avatarUrl
+				+ ", posts=" + posts + "]";
 	}
 
 	public LivestreamInfoId getId() {
@@ -130,6 +134,14 @@ public class LivestreamInfo {
 
 	public void setThumbnailUrl(String thumbnailUrl) {
 		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
 	}
 
 }
