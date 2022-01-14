@@ -21,7 +21,9 @@ import bar.barinade.livecheck.discord.serverconfig.service.DefinedChannelService
 import bar.barinade.livecheck.discord.serverconfig.service.ServerConfigService;
 import bar.barinade.livecheck.discord.serverconfig.service.WhitelistedCategoryService;
 import bar.barinade.livecheck.discord.serverconfig.service.WhitelistedChannelService;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -167,6 +169,13 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	
 	void cmd_config(SlashCommandEvent event) {
 		final String cmd = event.getName();
+		
+		Member mmbr = event.getMember();
+		if (!mmbr.hasPermission(Permission.ADMINISTRATOR) && !mmbr.hasPermission(Permission.MANAGE_SERVER)) {
+			m_logger.info("{} attempted to use config command without having permission", mmbr.getId());
+			event.getHook().editOriginal("You must have Manage Server or Administrator permissions to use this command.").queue();;
+			return;
+		}
 				
 		if (cmd.equalsIgnoreCase(BASE_CMD_NAME)) {
 			final String group = event.getSubcommandGroup();
