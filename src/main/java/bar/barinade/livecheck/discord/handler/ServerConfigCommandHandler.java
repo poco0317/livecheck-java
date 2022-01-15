@@ -65,6 +65,8 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	private static final String EXPLAIN_STREAMER_BLACKLIST = "If in use, any streamer found in this list will not show up when live.";
 	private static final String EXPLAIN_CATEGORY_BLACKLIST = "If in use, any streamer with a category in this list will not show up.";
 	
+	private static final int MAX_OUTPUT_TXT_LEN = 1995;
+	
 	@Autowired
 	private ServerConfigService configService;
 	
@@ -347,7 +349,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 						sb.append(c.getId().getCategory() + ", ");
 					}
 					String result = sb.toString();
-					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					result = result.substring(0, Math.min(result.length() - 2, MAX_OUTPUT_TXT_LEN)) + "```";
 					event.getHook().editOriginal(result).queue();
 				}
 			} else if (method.equals(SUBCMD_ADD)) {
@@ -392,7 +394,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 						sb.append(c.getId().getChannel() + ", ");
 					}
 					String result = sb.toString();
-					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					result = result.substring(0, Math.min(result.length() - 2, MAX_OUTPUT_TXT_LEN)) + "```";
 					event.getHook().editOriginal(result).queue();
 				}
 			} else if (method.equals(SUBCMD_ADD)) {
@@ -437,7 +439,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 						sb.append(c.getId().getChannel() + ", ");
 					}
 					String result = sb.toString();
-					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					result = result.substring(0, Math.min(result.length() - 2, MAX_OUTPUT_TXT_LEN)) + "```";
 					event.getHook().editOriginal(result).queue();
 				}
 			} else if (method.equals(SUBCMD_ADD)) {
@@ -472,17 +474,17 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 					event.getHook().editOriginal("Category '"+channel+"' was already not in whitelist. Nothing removed.").queue();
 				}
 			} else if (method.equals(SUBCMD_VIEW)) {
-				List<WhitelistedCategory> channels = wlCategoryService.getAll(id);
-				if (channels == null || channels.size() == 0) {
+				List<WhitelistedCategory> categories = wlCategoryService.getAll(id);
+				if (categories == null || categories.size() == 0) {
 					event.getHook().editOriginal("There are no categories in the whitelist.").queue();
 				} else {
 					StringBuilder sb = new StringBuilder();
-					sb.append(channels.size() + " channels: ```\n");
-					for (WhitelistedCategory c : channels) {
+					sb.append(categories.size() + " categories: ```\n");
+					for (WhitelistedCategory c : categories) {
 						sb.append(c.getId().getCategory() + ", ");
 					}
 					String result = sb.toString();
-					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					result = result.substring(0, Math.min(result.length() - 2, MAX_OUTPUT_TXT_LEN)) + "```";
 					event.getHook().editOriginal(result).queue();
 				}
 			} else if (method.equals(SUBCMD_ADD)) {
@@ -527,7 +529,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 						sb.append(c.getId().getChannel() + ", ");
 					}
 					String result = sb.toString();
-					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					result = result.substring(0, Math.min(result.length() - 2, MAX_OUTPUT_TXT_LEN)) + "```";
 					event.getHook().editOriginal(result).queue();
 				}
 			} else if (method.equals(SUBCMD_ADD)) {
@@ -562,17 +564,17 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 					event.getHook().editOriginal("Category '"+channel+"' was already not in blacklist. Nothing removed.").queue();
 				}
 			} else if (method.equals(SUBCMD_VIEW)) {
-				List<BlacklistedCategory> channels = blCategoryService.getAll(id);
-				if (channels == null || channels.size() == 0) {
+				List<BlacklistedCategory> categories = blCategoryService.getAll(id);
+				if (categories == null || categories.size() == 0) {
 					event.getHook().editOriginal("There are no categories in the blacklist.").queue();
 				} else {
 					StringBuilder sb = new StringBuilder();
-					sb.append(channels.size() + " channels: ```\n");
-					for (BlacklistedCategory c : channels) {
+					sb.append(categories.size() + " categories: ```\n");
+					for (BlacklistedCategory c : categories) {
 						sb.append(c.getId().getCategory() + ", ");
 					}
 					String result = sb.toString();
-					result = result.substring(0, Math.min(result.length() - 2, 2000));
+					result = result.substring(0, Math.min(result.length() - 2, MAX_OUTPUT_TXT_LEN)) + "```";
 					event.getHook().editOriginal(result).queue();
 				}
 			} else if (method.equals(SUBCMD_ADD)) {
