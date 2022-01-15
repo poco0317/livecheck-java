@@ -117,11 +117,11 @@ public class LivestreamManager {
 			HashSet<String> categories = new HashSet<>();
 			channelService.getAll(id).forEach(channel -> {
 				allChannels.add(channel.getId().getChannel());
-				channels.add(channel.getId().getChannel());
+				channels.add(channel.getId().getChannel().toLowerCase());
 			});
 			categoryService.getAll(id).forEach(category -> {
 				allCategories.add(category.getId().getCategory());
-				categories.add(category.getId().getCategory());
+				categories.add(category.getId().getCategory().toLowerCase());
 			});
 			guildsToChannels.put(id, channels);
 			guildsToCategories.put(id, categories);
@@ -167,10 +167,10 @@ public class LivestreamManager {
 			HashSet<String> whitelistedChannels = new HashSet<>();
 			String titleregex = configService.getRequiredTitleRegex(id);
 			
-			blCategoryService.getAll(id).forEach(category -> blacklistedCategories.add(category.getId().getCategory()));
-			wlCategoryService.getAll(id).forEach(category -> whitelistedCategories.add(category.getId().getCategory()));
-			blChannelService.getAll(id).forEach(channel -> blacklistedChannels.add(channel.getId().getChannel()));
-			wlChannelService.getAll(id).forEach(channel -> whitelistedChannels.add(channel.getId().getChannel()));
+			blCategoryService.getAll(id).forEach(category -> blacklistedCategories.add(category.getId().getCategory().toLowerCase()));
+			wlCategoryService.getAll(id).forEach(category -> whitelistedCategories.add(category.getId().getCategory().toLowerCase()));
+			blChannelService.getAll(id).forEach(channel -> blacklistedChannels.add(channel.getId().getChannel().toLowerCase()));
+			wlChannelService.getAll(id).forEach(channel -> whitelistedChannels.add(channel.getId().getChannel().toLowerCase()));
 			ServerConfiguration config = configService.getConfig(id);
 			Long liveMentionRole = configService.getMentionRole(id);
 			
@@ -222,12 +222,12 @@ public class LivestreamManager {
 				
 				// delete a post if it fails whitelist check, blacklist check, or literally isnt live at all
 				boolean deleteThisPost = channelsLiveForThisPlatform == null || channelsLiveForThisPlatform.get(username) == null
-						|| (!(guildsToChannels.get(id) != null && guildsToChannels.get(id).contains(username))
-						&& !(guildsToCategories.get(id) != null && guildsToCategories.get(id).contains(category)))
-						|| (blacklistedChannels != null && blacklistedChannels.contains(username))
-						|| (blacklistedCategories != null && blacklistedCategories.contains(category))
-						|| (whitelistedCategories != null && whitelistedCategories.size() > 0 && !whitelistedCategories.contains(category))
-						|| (whitelistedChannels != null && whitelistedChannels.size() > 0 && !whitelistedChannels.contains(username))
+						|| (!(guildsToChannels.get(id) != null && guildsToChannels.get(id).contains(username.toLowerCase()))
+						&& !(guildsToCategories.get(id) != null && guildsToCategories.get(id).contains(category.toLowerCase())))
+						|| (blacklistedChannels != null && blacklistedChannels.contains(username.toLowerCase()))
+						|| (blacklistedCategories != null && blacklistedCategories.contains(category.toLowerCase()))
+						|| (whitelistedCategories != null && whitelistedCategories.size() > 0 && !whitelistedCategories.contains(category.toLowerCase()))
+						|| (whitelistedChannels != null && whitelistedChannels.size() > 0 && !whitelistedChannels.contains(username.toLowerCase()))
 						|| (titleregex != null && !regexmatch);
 				
 				if (deleteThisPost) {
@@ -282,16 +282,16 @@ public class LivestreamManager {
 						}
 					}
 					// dont post if it fails whitelist check, blacklist check, or literally isnt live at all
-					boolean shouldNotPostThis = (!(guildsToChannels.get(id) != null && guildsToChannels.get(id).contains(username))
-							&& !(guildsToCategories.get(id) != null && guildsToCategories.get(id).contains(category)))
-							|| (blacklistedChannels != null && blacklistedChannels.contains(username))
-							|| (blacklistedCategories != null && blacklistedCategories.contains(category))
-							|| (whitelistedCategories != null && whitelistedCategories.size() > 0 && !whitelistedCategories.contains(category))
-							|| (whitelistedChannels != null && whitelistedChannels.size() > 0 && !whitelistedChannels.contains(username))
+					boolean shouldNotPostThis = (!(guildsToChannels.get(id) != null && guildsToChannels.get(id).contains(username.toLowerCase()))
+							&& !(guildsToCategories.get(id) != null && guildsToCategories.get(id).contains(category.toLowerCase())))
+							|| (blacklistedChannels != null && blacklistedChannels.contains(username.toLowerCase()))
+							|| (blacklistedCategories != null && blacklistedCategories.contains(category.toLowerCase()))
+							|| (whitelistedCategories != null && whitelistedCategories.size() > 0 && !whitelistedCategories.contains(category.toLowerCase()))
+							|| (whitelistedChannels != null && whitelistedChannels.size() > 0 && !whitelistedChannels.contains(username.toLowerCase()))
 							|| (titleregex != null && !regexmatch);
 					
 					if (shouldNotPostThis) {
-						m_logger.trace("skipped a stream - GUILD {} | user {} | category {}", id, username, category);
+						m_logger.trace("skipped a stream - GUILD {} | user {} | category '{}'", id, username, category);
 						continue;
 					}
 					
@@ -342,7 +342,7 @@ public class LivestreamManager {
 		String curViews = newInfo.getCurrentViewers() != null ? String.format("%d", newInfo.getCurrentViewers()) : "unknown";
 		String status = newInfo.getStatus() != null && !newInfo.getStatus().isEmpty() ? StringUtils.capitalize(newInfo.getStatus()) : "Non-Affiliate";
 		String streamTitle = newInfo.getTitle() != null ? String.format("\"%s\"", newInfo.getTitle()) : "(blank title)";
-		String description = newInfo.getDescription() != null ? newInfo.getDescription() : "No description";
+		String description = newInfo.getDescription() != null && !newInfo.getDescription().isEmpty() ? newInfo.getDescription() : "No description";
 		
 		return new EmbedBuilder()
 				.setTitle(xPlayingY, streamUrl)
