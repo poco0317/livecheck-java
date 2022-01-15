@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import bar.barinade.livecheck.discord.handler.BasicMessageHandler;
 import bar.barinade.livecheck.discord.handler.CommandHandlerBase;
 import bar.barinade.livecheck.discord.handler.ServerConfigCommandHandler;
 import net.dv8tion.jda.api.JDA;
@@ -30,12 +31,12 @@ public class BotManager {
 	@Value("${discord.token}")
 	private String token;
 	
-	private JDA jdaBot;
+	private static JDA jdaBot;
 	
 	@Autowired
 	private ApplicationContext springContext;
 	
-	public JDA getJDA() {
+	public static JDA getJDA() {
 		return jdaBot;
 	}
 	
@@ -66,7 +67,7 @@ public class BotManager {
 				GatewayIntent.GUILD_MEMBERS,
 				GatewayIntent.GUILD_MESSAGE_REACTIONS,
 				GatewayIntent.GUILD_MESSAGE_TYPING,
-				GatewayIntent.GUILD_MESSAGES,
+				//GatewayIntent.GUILD_MESSAGES,
 				GatewayIntent.GUILD_PRESENCES,
 				GatewayIntent.GUILD_VOICE_STATES,
 				GatewayIntent.GUILD_WEBHOOKS
@@ -84,7 +85,8 @@ public class BotManager {
 		
 		// how to care about commands
 		final CommandHandlerBase configCommands = springContext.getBean(ServerConfigCommandHandler.class);
-		builder.addEventListeners(configCommands);
+		final BasicMessageHandler msgCommands = springContext.getBean(BasicMessageHandler.class);
+		builder.addEventListeners(configCommands, msgCommands);
 		
 		// about to finish making the client...
 		m_logger.info("Waiting for login");

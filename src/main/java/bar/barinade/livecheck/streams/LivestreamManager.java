@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -40,7 +42,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 
@@ -72,8 +76,7 @@ public class LivestreamManager {
 	@Autowired
 	private DefinedChannelService channelService;
 	
-	@Autowired
-	private BotManager botManager;
+	ConcurrentHashMap<Long, MessageHistory> histories = new ConcurrentHashMap<>();
 	
 	@Autowired
 	private LivestreamInfoRepo streamRepo;
@@ -89,7 +92,7 @@ public class LivestreamManager {
 		
 		m_logger.info("LivestreamManager initialize finished");
 	}
-	
+		
 	/**
 	 * Collect all streams for all servers and update appropriately.
 	 * This function normally should be run on a loop, doing most of the work.
@@ -97,7 +100,7 @@ public class LivestreamManager {
 	@Scheduled(fixedDelay = AGGREGATION_LOOP_WAIT_MILLIS, initialDelay = INITIAL_WAIT_MILLIS)
 	public void aggregate() {
 		m_logger.info("Beginning global livestream update");
-		JDA jda = botManager.getJDA();
+		JDA jda = BotManager.getJDA();
 		
 		// collect all running guild ids (if kicked from a server there's no chance of fixing the messages)
 		List<Long> guildIds = new ArrayList<>();
@@ -331,7 +334,7 @@ public class LivestreamManager {
 	private MessageEmbed generateEmbedForInfo(LivestreamInfo newInfo, LivestreamImpl impl) {
 		final String xPlayingY = String.format("%s playing %s", newInfo.getId().getName(), newInfo.getCategory());
 		final String streamUrl = impl.getStreamUrl(newInfo);
-		JDA jda = botManager.getJDA();
+		JDA jda = BotManager.getJDA();
 		
 		// be careful to not let nulls get in the way
 		String followers = newInfo.getFollowers() != null ? String.format("%d", newInfo.getFollowers()) : "unknown";
@@ -357,5 +360,64 @@ public class LivestreamManager {
 				.addField("Description", description, true)
 				.build();
 		
+	}
+	
+	/**
+	 * Get entire history of the stream channel, and delete all messages sent by this bot.
+	 */
+	public void cleanup() {
+		JDA jda = BotManager.getJDA();
+		List<Long> guildIds = new ArrayList<>();
+		jda.getGuilds().forEach(guild -> guildIds.add(guild.getIdLong()));
+		for (Long id : guildIds) {
+			final Guild guild = jda.getGuildById(id);
+			if (guild == null) {
+				continue;
+			}
+			Long outputChannelId = configService.getOutputChannel(id);
+			if (outputChannelId == null) {
+				continue;
+			}
+			final TextChannel txtchan = guild.getTextChannelById(outputChannelId);
+			if (txtchan == null) {
+				continue;
+			}
+
+			recursivelyGetChannelHistoryAndDeleteOwnPosts(txtchan);
+		}
+	}
+	
+	private void recursivelyGetChannelHistoryAndDeleteOwnPosts(MessageChannel c) {
+		MessageHistory history = gethistory(c);
+		JDA jda = c.getJDA();
+		history.retrievePast(100).queue(messagelist -> {
+			if (messagelist == null || messagelist.size() == 0) {
+				// delete the saved messages
+				List<Message> filtered = history.getRetrievedHistory().stream().filter(m -> {
+					return m.getAuthor().getIdLong() == jda.getSelfUser().getIdLong();
+				}).collect(Collectors.toList());
+				
+				m_logger.info("Beginning to purge {} messages in channel {}", filtered.size(), c.getId());
+				
+				CompletableFuture.allOf(c.purgeMessages(filtered).toArray(new CompletableFuture[0])).exceptionally(e -> {
+					m_logger.error("Error purging in channel "+c.getId(), e);
+					return null;
+				}).whenComplete((result, ex) -> {
+					m_logger.info("Finished purging in channel {}", c.getId());
+				});
+			} else {
+				// repeat
+				recursivelyGetChannelHistoryAndDeleteOwnPosts(c);
+			}
+		});
+	}
+	
+	
+	private MessageHistory gethistory(MessageChannel c) {
+		long id = c.getIdLong();
+		if (!histories.containsKey(id)) {
+			histories.put(id, c.getHistory());
+		}
+		return histories.get(id);
 	}
 }
