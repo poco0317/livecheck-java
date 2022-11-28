@@ -1,5 +1,7 @@
 package bar.barinade.livecheck.discord;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.security.auth.login.LoginException;
 
@@ -16,6 +18,7 @@ import bar.barinade.livecheck.discord.handler.ServerConfigCommandHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
@@ -105,6 +108,14 @@ public class BotManager {
 	}
 	
 	private static void upsertHandlerCommands(JDA jda, CommandHandlerBase... handlers) {
+		
+		List<Command> cmds = jda.retrieveCommands().complete();
+		if (cmds != null) {
+			for (Command cmd : cmds) {
+				jda.deleteCommandById(cmd.getIdLong()).complete();
+			}
+		}
+		
 		if (handlers == null) {
 			m_logger.error("Passed no handlers to upsertHandlerCommands. No commands upserted.");
 		} else {

@@ -39,7 +39,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	
 	private static final Logger m_logger = LoggerFactory.getLogger(ServerConfigCommandHandler.class);
 	
-	private static final String BASE_CMD_NAME = "config";
+	private static final String BASE_CMD_NAME = "lcconfig";
 	private static final String GROUPCMD_NAME_TXTCHAN = "channel";
 	private static final String GROUPCMD_NAME_REQUIREDTITLE = "requiredtitle";
 	private static final String GROUPCMD_NAME_CATEGORY = "category";
@@ -173,7 +173,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		};
 	}
 	
-	void cmd_config(SlashCommandEvent event) {
+	void cmd_lcconfig(SlashCommandEvent event) {
 		final String cmd = event.getName();
 		
 		Member mmbr = event.getMember();

@@ -213,7 +213,7 @@ public class LivestreamManager {
 					try {
 						Pattern p = Pattern.compile(titleregex);
 						Matcher m = p.matcher(streamTitle);
-						regexmatch = m.matches();
+						regexmatch = m.find();
 					} catch (Exception e) {
 						regexmatch = false;
 						m_logger.info("Bad regex pattern passed for guild {}: '{}'", id, titleregex);
@@ -275,7 +275,7 @@ public class LivestreamManager {
 						try {
 							Pattern p = Pattern.compile(titleregex);
 							Matcher m = p.matcher(streamTitle);
-							regexmatch = m.matches();
+							regexmatch = m.find();
 						} catch (Exception e) {
 							regexmatch = false;
 							m_logger.info("Bad regex pattern passed for guild {}: '{}'", id, titleregex);
