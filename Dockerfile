@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-jdk-alpine as build
+FROM eclipse-temurin:11-jdk-alpine
 
 WORKDIR app
 
@@ -10,9 +10,6 @@ COPY src src
 USER root
 
 RUN chmod +x ./mvnw
-RUN ./mvnw install -DskipTests
-
-FROM eclipse-temurin:11-jdk-alpine
-WORKDIR app
+RUN ./mvnw dependency:go-offline
 
 CMD ["./mvnw", "spring-boot:run"]
