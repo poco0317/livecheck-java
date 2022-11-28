@@ -14,9 +14,5 @@ RUN ./mvnw install -DskipTests
 
 FROM eclipse-temurin:11-jdk-alpine
 WORKDIR app
-COPY --from=build app/dependencies/ ./
-COPY --from=build app/spring-boot-loader/ ./
-COPY --from=build app/snapshot-dependencies/ ./
-COPY --from=build app/application/ ./
 
 CMD ["./mvnw", "spring-boot:run"]
