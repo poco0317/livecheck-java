@@ -1,13 +1,26 @@
 spring:
   jpa:
-    properties:
-      hibernate:
-        show_sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      show_sql: true
   datasource:
-    username: root
-    password: root
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/livecheck
-          
+    #url: jdbc:mariadb://localhost:3306/livecheck
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    url: ${DB_URL}
+
 discord:
-  token:
+  token: ${DISCORD_TOKEN}
+  ownerid: ${DISCORD_OWNERID}
+
+streams:
+  twitch:
+    clientid: ${TWITCH_CLIENTID}
+    clientsecret: ${TWITCH_CLIENTSECRET}
+
+logging:
+  level:
+    #org.hibernate.SQL: DEBUG
+    bar.barinade: INFO
