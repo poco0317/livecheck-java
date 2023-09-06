@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component;
 
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.TwitchHelixBuilder;
-import com.github.twitch4j.helix.domain.FollowList;
 import com.github.twitch4j.helix.domain.Game;
 import com.github.twitch4j.helix.domain.GameList;
+import com.github.twitch4j.helix.domain.InboundFollowers;
 import com.github.twitch4j.helix.domain.Stream;
 import com.github.twitch4j.helix.domain.StreamList;
 import com.github.twitch4j.helix.domain.UserList;
@@ -143,7 +143,7 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 			int endIndex = Math.min(100, categoryNames.size());
 			List<String> idChunk = categoryNames.subList(startIndex, endIndex);
 			while (idChunk.size() > 0 && startIndex < categoryNames.size()) {
-				GameList result = api.getGames(null, null, idChunk).execute();
+				GameList result = api.getGames(null, null, idChunk, null).execute();
 				output.addAll(result.getGames());
 				
 				// add to cache
@@ -247,14 +247,15 @@ public class TwitchLivestreamImpl extends LivestreamImpl {
 			UserList ul = api.getUsers(null, null, chunk).execute();
 			ul.getUsers().forEach(user -> {
 				String id = user.getId();
-				FollowList follows = api.getFollowers(null, null, id, null, 1).execute();
+				InboundFollowers follows = api.getChannelFollowers(null, id, null, 1, null).execute();
+				//FollowList follows = api.getFollowers(null, null, id, null, 1).execute();
 				datamap.put(
 						user.getLogin(),
 						new MiscData(
 							user.getDescription(),
 							follows.getTotal(),
 							user.getBroadcasterType(),
-							user.getViewCount(),
+							0,
 							user.getProfileImageUrl()
 							)
 						);
