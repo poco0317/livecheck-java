@@ -53,6 +53,7 @@ public class BotManager {
 				CacheFlag.ACTIVITY,
 				CacheFlag.CLIENT_STATUS,
 				CacheFlag.EMOJI,
+				CacheFlag.STICKER,
 				CacheFlag.MEMBER_OVERRIDES,
 				CacheFlag.ONLINE_STATUS,
 				CacheFlag.ROLE_TAGS,
