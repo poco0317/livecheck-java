@@ -338,7 +338,7 @@ public class LivestreamManager {
 		
 		// be careful to not let nulls get in the way
 		String followers = newInfo.getFollowers() != null ? String.format("%d", newInfo.getFollowers()) : "unknown";
-		String totViews = newInfo.getTotalViews() != null ? String.format("%d", newInfo.getTotalViews()) : "unknown";
+		//String totViews = newInfo.getTotalViews() != null ? String.format("%d", newInfo.getTotalViews()) : "unknown";
 		String curViews = newInfo.getCurrentViewers() != null ? String.format("%d", newInfo.getCurrentViewers()) : "unknown";
 		String status = newInfo.getStatus() != null && !newInfo.getStatus().isEmpty() ? StringUtils.capitalize(newInfo.getStatus()) : "Non-Affiliate";
 		String streamTitle = newInfo.getTitle() != null ? String.format("\"%s\"", newInfo.getTitle()) : "(blank title)";
@@ -354,7 +354,7 @@ public class LivestreamManager {
 				.setImage(newInfo.getThumbnailUrl())
 				.setThumbnail(newInfo.getAvatarUrl())
 				.addField("Followers", followers, true)
-				.addField("Total Views", totViews, true)
+				//.addField("Total Views", totViews, true)
 				.addField("Current Views", curViews, true)
 				.addField("Status", status, true)
 				.addField("Description", description, true)
