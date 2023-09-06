@@ -52,7 +52,7 @@ public class BotManager {
 		builder.disableCache(
 				CacheFlag.ACTIVITY,
 				CacheFlag.CLIENT_STATUS,
-				CacheFlag.EMOTE,
+				CacheFlag.EMOJI,
 				CacheFlag.MEMBER_OVERRIDES,
 				CacheFlag.ONLINE_STATUS,
 				CacheFlag.ROLE_TAGS,
@@ -64,8 +64,7 @@ public class BotManager {
 				GatewayIntent.DIRECT_MESSAGE_REACTIONS,
 				GatewayIntent.DIRECT_MESSAGE_TYPING,
 				GatewayIntent.DIRECT_MESSAGES,
-				GatewayIntent.GUILD_BANS,
-				GatewayIntent.GUILD_EMOJIS,
+				GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
 				GatewayIntent.GUILD_INVITES,
 				GatewayIntent.GUILD_MEMBERS,
 				GatewayIntent.GUILD_MESSAGE_REACTIONS,

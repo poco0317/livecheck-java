@@ -39,14 +39,14 @@ import bar.barinade.livecheck.streams.data.repo.PostedLivestreamRepo;
 import bar.barinade.livecheck.streams.twitch.TwitchLivestreamImpl;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 @Service
 public class LivestreamManager {
@@ -303,7 +303,7 @@ public class LivestreamManager {
 					
 					final MessageEmbed embed = generateEmbedForInfo(info, impl);
 					
-					MessageBuilder builder = new MessageBuilder()
+					MessageCreateBuilder builder = new MessageCreateBuilder()
 							.setEmbeds(embed);
 					
 					// mention when any streamer goes live
@@ -314,7 +314,7 @@ public class LivestreamManager {
 						}
 					}
 					
-					Message toSend = builder.build();
+					MessageCreateData toSend = builder.build();
 					txtchan.sendMessage(toSend).queue(sentMessage -> {
 						postId.setMessageId(sentMessage.getIdLong());
 						newPost.setId(postId);
@@ -387,7 +387,7 @@ public class LivestreamManager {
 		}
 	}
 	
-	private void recursivelyGetChannelHistoryAndDeleteOwnPosts(MessageChannel c) {
+	private void recursivelyGetChannelHistoryAndDeleteOwnPosts(TextChannel c) {
 		MessageHistory history = gethistory(c);
 		if (history == null)
 			return;
@@ -415,7 +415,7 @@ public class LivestreamManager {
 	}
 	
 	
-	private MessageHistory gethistory(MessageChannel c) {
+	private MessageHistory gethistory(TextChannel c) {
 		long id = c.getIdLong();
 		if (!histories.containsKey(id)) {
 			try {

@@ -23,13 +23,14 @@ import bar.barinade.livecheck.discord.serverconfig.service.ServerConfigService;
 import bar.barinade.livecheck.discord.serverconfig.service.WhitelistedCategoryService;
 import bar.barinade.livecheck.discord.serverconfig.service.WhitelistedChannelService;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
@@ -92,7 +93,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 	public CommandData[] getCommandsToUpsert() {
 		// oh my god
 		return new CommandData[] {
-				new CommandData(BASE_CMD_NAME, "Modify Livecheck configuration for this server.")
+				Commands.slash(BASE_CMD_NAME, "Modify Livecheck configuration for this server.")
 				.addSubcommandGroups(
 						new SubcommandGroupData(GROUPCMD_NAME_REQUIREDTITLE, "Modify the required title Regular Expression.")
 						.addSubcommands(
@@ -173,7 +174,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		};
 	}
 	
-	void cmd_lcconfig(SlashCommandEvent event) {
+	void cmd_lcconfig(SlashCommandInteractionEvent event) {
 		final String cmd = event.getName();
 		
 		Member mmbr = event.getMember();
@@ -228,7 +229,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		}
 	}
 	
-	private void reqTitle(SlashCommandEvent event) {
+	private void reqTitle(SlashCommandInteractionEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
 			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
@@ -256,7 +257,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		}
 	}
 	
-	private void txtChannel(SlashCommandEvent event) {
+	private void txtChannel(SlashCommandInteractionEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
 			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
@@ -273,12 +274,12 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 					event.getHook().editOriginal("You must specify a Text Channel. Your channel was of type '"+chantype.toString()+"'").queue();
 					return;
 				}
-				final MessageChannel channel = event.getOption(OPTION_CHANNEL).getAsMessageChannel();
+				final TextChannel channel = event.getOption(OPTION_CHANNEL).getAsChannel().asTextChannel();
 				configService.setOutputChannel(id, channel.getIdLong());
 				event.getHook().editOriginal("Set output channel to: "+channel.getName()).queue();
 			} else if (method.equals(SUBCMD_VIEW)) {
 				final Long channelId = configService.getOutputChannel(id);
-				final MessageChannel channel = event.getGuild().getTextChannelById(channelId != null ? channelId : 0L);
+				final TextChannel channel = event.getGuild().getTextChannelById(channelId != null ? channelId : 0L);
 				if (channel != null) {
 					event.getHook().editOriginal("The livestream output channel is set to: "+channel.getName()).queue();
 				} else {
@@ -290,7 +291,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		}
 	}
 	
-	private void mentionRole(SlashCommandEvent event) {
+	private void mentionRole(SlashCommandInteractionEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
 			event.getHook().editOriginal("Missing argument '"+SUBCMD_SET+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"'").queue();
@@ -319,7 +320,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		}
 	}
 	
-	private void categoryWatch(SlashCommandEvent event) {
+	private void categoryWatch(SlashCommandInteractionEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
 			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
@@ -364,7 +365,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		}
 	}
 	
-	private void streamerWatch(SlashCommandEvent event) {
+	private void streamerWatch(SlashCommandInteractionEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
 			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
@@ -409,7 +410,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		}
 	}
 	
-	private void wlStreamer(SlashCommandEvent event) {
+	private void wlStreamer(SlashCommandInteractionEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
 			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
@@ -454,7 +455,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		}
 	}
 	
-	private void wlCategory(SlashCommandEvent event) {
+	private void wlCategory(SlashCommandInteractionEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
 			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
@@ -499,7 +500,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		}
 	}
 	
-	private void blStreamer(SlashCommandEvent event) {
+	private void blStreamer(SlashCommandInteractionEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
 			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();
@@ -544,7 +545,7 @@ public class ServerConfigCommandHandler extends CommandHandlerBase {
 		}
 	}
 	
-	private void blCategory(SlashCommandEvent event) {
+	private void blCategory(SlashCommandInteractionEvent event) {
 		final String method = event.getSubcommandName();
 		if (method == null) {
 			event.getHook().editOriginal("Missing argument '"+SUBCMD_ADD+"' or '"+SUBCMD_REMOVE+"' or '"+SUBCMD_VIEW+"' or '"+SUBCMD_DELALL+"'").queue();

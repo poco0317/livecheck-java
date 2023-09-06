@@ -27,10 +27,10 @@ public class BasicMessageHandler extends ListenerAdapter {
 			
 			if (CMD_REFRESH.equals(msg)) {
 				streamManager.aggregate();
-				event.getTextChannel().sendMessage("Globally refreshed all streams.").queue();
+				event.getChannel().sendMessage("Globally refreshed all streams.").queue();
 			} else if (CMD_CLEAN.equals(msg)) {
 				streamManager.cleanup();
-				event.getTextChannel().sendMessage("Globally removed all messages sent by this bot.").queue();
+				event.getChannel().sendMessage("Globally removed all messages sent by this bot.").queue();
 			}
 		}
 	}
