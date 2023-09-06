@@ -389,6 +389,8 @@ public class LivestreamManager {
 	
 	private void recursivelyGetChannelHistoryAndDeleteOwnPosts(MessageChannel c) {
 		MessageHistory history = gethistory(c);
+		if (history == null)
+			return;
 		JDA jda = c.getJDA();
 		history.retrievePast(100).queue(messagelist -> {
 			if (messagelist == null || messagelist.size() == 0) {
@@ -416,7 +418,11 @@ public class LivestreamManager {
 	private MessageHistory gethistory(MessageChannel c) {
 		long id = c.getIdLong();
 		if (!histories.containsKey(id)) {
-			histories.put(id, c.getHistory());
+			try {
+				histories.put(id, c.getHistory());
+			} catch (net.dv8tion.jda.api.exceptions.InsufficientPermissionException e) {
+				m_logger.warn("Missing permission to view channel history for channel {}", c.getId());
+			}
 		}
 		return histories.get(id);
 	}
